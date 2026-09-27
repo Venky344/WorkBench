@@ -18,12 +18,14 @@
 ## 2. Code Quality & Maintainability
 
 ### Modular Architecture
+
 - Code must be organized into decoupled, single-responsibility modules.
 - **File Size Guidelines**: Aim to keep component and service files under 250–300 lines. Avoid monolithic "God files" or catch-all utility buckets.
 - **Clear Boundaries**: Separate Presentation (UI components), Domain Logic (services, reducers, Brain), and Data Access (storage adapters, parsers).
 - **Naming Conventions**: Use clear, unambiguous, domain-specific names (e.g., `useConversationRecord`, `normalizeChatGPTExport`, `ProjectContextStore`).
 
 ### Strong Type Safety
+
 - The codebase must strictly use TypeScript with `strict: true`.
 - Explicitly avoid `any`. In rare edge cases where dynamic JSON parsing is necessary, use `unknown` combined with type guards or runtime validators (e.g., Zod schemas).
 - Define normalized domain models for all entities (Projects, Chats, Messages, Decisions, Tasks, Notes).
@@ -51,6 +53,7 @@ WorkBench interacts with user files, external imports, and clipboard data. Secur
 ## 4. Performance & Resource Discipline
 
 WorkBench must feel instantaneous:
+
 > **Target:** Cold start < 1s, Search latency < 50ms, UI interaction latency < 16ms (60 FPS).
 
 - **Zero Unnecessary Daemons**: Avoid background pollers, continuous indexing loops, or unmonitored timers.
@@ -93,10 +96,10 @@ WorkBench must feel instantaneous:
 - **Structured Error Model**:
   ```typescript
   interface AppError {
-    code: string;           // e.g., 'IMPORT_PARSER_FAILED'
-    message: string;        // User-friendly explanation
-    details?: unknown;      // Debugging payload (in dev mode)
-    recoverable: boolean;   // Whether the operation can be retried
+    code: string; // e.g., 'IMPORT_PARSER_FAILED'
+    message: string; // User-friendly explanation
+    details?: unknown; // Debugging payload (in dev mode)
+    recoverable: boolean; // Whether the operation can be retried
   }
   ```
 - **Local Diagnostics**: Maintain an in-memory or local activity log for operations and errors without transmitting analytics to remote servers without user consent.
@@ -106,6 +109,7 @@ WorkBench must feel instantaneous:
 ## 7. Testing Philosophy
 
 Testing must scale with development phases:
+
 1. **Unit Tests**: Mandatory for data normalizers, import adapters, Brain relationship indexers, search tokenizers, and automation rule evaluators.
 2. **Integration Tests**: Verify state transitions, project CRUD, file system read/write adapters, and import pipelines.
 3. **End-to-End (E2E) Tests**: Verify shell navigation, command palette, capture workflows, and desktop packaging in later phases.

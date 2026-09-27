@@ -11,10 +11,13 @@
 **WorkBench** is a lightweight, personal digital work area designed to help a single user organize and manage work spread across AI platforms and digital sources.
 
 The central product idea is:
+
 > **Everything you work on, organized in one digital work area.**
 
 ### The Core Problem
+
 Modern knowledge workers increasingly perform complex work through AI conversations and distributed web tools. Over time, this causes severe fragmentation. A user often remembers:
+
 - Discussing an architectural design with an AI
 - Researching a framework or library
 - Generating code snippets
@@ -22,6 +25,7 @@ Modern knowledge workers increasingly perform complex work through AI conversati
 - Solving a difficult bug or drafting an algorithm
 
 ...but cannot remember:
+
 - Which AI platform was used (ChatGPT, Claude, Gemini, Perplexity, etc.)
 - Which conversation contained the specific breakthrough or decision
 - Which project or repository it belonged to
@@ -35,12 +39,12 @@ Existing tools (browser history, pinned chats, bookmarks, local folders, generic
 
 ## 2. What WorkBench IS and IS NOT
 
-| What WorkBench IS | What WorkBench IS NOT |
-| :--- | :--- |
-| **A personal digital work area** for organizing projects, chats, notes, files, tasks, and decisions. | **NOT another AI chatbot** or LLM wrapper. |
-| **A local-first, lightweight command center** that preserves context and provenance across AI sources. | **NOT an AI generation engine** that requires API keys or continuous inference. |
-| **A fast indexing & organization layer (WorkBench Brain)** for entity linking and structured metadata. | **NOT a vector database** or heavy agentic runtime. |
-| **A universal capture and import system** for external AI conversations and web resources. | **NOT a scraper that bypasses security/auth** or circumvents platform boundaries. |
+| What WorkBench IS                                                                                      | What WorkBench IS NOT                                                             |
+| :----------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------- |
+| **A personal digital work area** for organizing projects, chats, notes, files, tasks, and decisions.   | **NOT another AI chatbot** or LLM wrapper.                                        |
+| **A local-first, lightweight command center** that preserves context and provenance across AI sources. | **NOT an AI generation engine** that requires API keys or continuous inference.   |
+| **A fast indexing & organization layer (WorkBench Brain)** for entity linking and structured metadata. | **NOT a vector database** or heavy agentic runtime.                               |
+| **A universal capture and import system** for external AI conversations and web resources.             | **NOT a scraper that bypasses security/auth** or circumvents platform boundaries. |
 
 ---
 
@@ -65,21 +69,24 @@ WorkBench **MUST NOT** require an embedded LLM or cloud AI service to function.
 
 - **Zero Core Dependency on AI Models**: The core architecture must never depend on OpenAI, Anthropic, Gemini, Perplexity, Ollama, local LLMs, Transformers, GPU acceleration, model downloads, or mandatory embedding pipelines.
 - **Independent Utility**: WorkBench must remain 100% useful, functional, and fast as an offline workspace without any internet access or AI subscriptions.
-- **Role of AI in WorkBench**: WorkBench *organizes* content that originated from AI platforms; it does not need to generate AI responses itself. Any future intelligence features must strictly be optional, decoupled add-ons that never break or gate core functionality.
+- **Role of AI in WorkBench**: WorkBench _organizes_ content that originated from AI platforms; it does not need to generate AI responses itself. Any future intelligence features must strictly be optional, decoupled add-ons that never break or gate core functionality.
 
 ---
 
 ## 5. Local-First & Performance Philosophy
 
 ### Local-First Operation
+
 - WorkBench is designed to operate primarily on the user's local machine.
 - Core local operations include: opening workspaces, browsing chats, editing notes, reading files, searching, managing tasks, logging decisions, and executing automations.
 - Internet connectivity is required **only** when explicitly interacting with external web resources (e.g., importing from a live shared URL or optional remote sync).
 
 ### Performance Philosophy
+
 > **Open instantly. Search instantly. Organize instantly.**
 
 Engineering must actively prevent:
+
 - Unnecessary background worker processes and heavy polling loops
 - Extraneous network round-trips
 - Bulky, unvetted runtime dependencies

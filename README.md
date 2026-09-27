@@ -6,48 +6,89 @@ WorkBench is a lightweight personal digital work area designed to help a single 
 
 ---
 
-## 📌 Phase 0: Product & Engineering Contract
+## 📌 Development Status
 
-WorkBench is developed under a strict, fixed **33-phase development roadmap (Phase 0 through Phase 32)**. Phase 0 establishes the immutable foundational contract, architectural boundaries, and engineering standards for all subsequent development.
-
-### Core Documentation
-
-The definitive specifications governing this project are documented in `/docs`:
-
-- **[Product Contract](file:///c:/WorkBench/docs/PRODUCT_CONTRACT.md)**: Product definition, problem statement, the 8 core pillars, boundaries, local-first philosophy, lightweight requirements, and the explicit **No-LLM** rule.
-- **[Engineering Principles](file:///c:/WorkBench/docs/ENGINEERING_PRINCIPLES.md)**: Code standards, modularity guidelines, strict type safety, defensive security, performance metrics, accessibility (a11y), error handling, and testing strategy.
-- **[Architecture Principles](file:///c:/WorkBench/docs/ARCHITECTURE_PRINCIPLES.md)**: System design, normalized data pipelines, provider adapter isolation, non-LLM WorkBench Brain, provenance tracking, deterministic automations, and web-to-desktop migration path.
-- **[Terminology & Glossary](file:///c:/WorkBench/docs/GLOSSARY.md)**: Standardized definitions for all domain entities and product concepts.
-- **[Development Roadmap](file:///c:/WorkBench/docs/ROADMAP.md)**: Fixed 33-phase execution roadmap from Phase 0 to Phase 32.
+- **Current Phase**: **Phase 1 — Repository & Architecture Foundation** (Completed & Validated)
+- **Next Phase**: **Phase 2 — WorkBench Design System**
 
 ---
 
-## 🏛️ Core Architectural Invariants
+## 🚀 Quick Start & Development Guide
 
-1. **Not an AI Chatbot**: WorkBench organizes work that originated from AI platforms; it does not generate AI responses or wrap LLMs.
-2. **Non-LLM WorkBench Brain**: The internal organizational intelligence is a deterministic relational and indexing engine, not an artificial intelligence model.
-3. **Local-First & Offline Capable**: All core features (opening projects, browsing chats, notes, search, tasks, decisions) function 100% locally without cloud dependencies.
-4. **Normalized Internal Format**: External provider formats (ChatGPT, Claude, Gemini, etc.) never leak into core components. All imports pass through isolated provider adapters and AST normalizers.
-5. **Fast & Lightweight**: Sub-second cold start, instant local search, zero bloated background processes.
-6. **Web to Desktop Strategy**: Web-first architecture designed to transition smoothly into a native Windows desktop shell (Tauri) in later phases without rewriting application logic.
+### Prerequisites
+
+- Node.js `>= 18.0.0` (Tested on Node `v24.x`)
+- npm `>= 9.0.0`
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Run Development Server
+
+```bash
+npm run dev
+```
+
+Starts the local development server at `http://localhost:3000`.
+
+### 3. Run Test Suite
+
+```bash
+npm run test:run
+```
+
+Executes all unit and integration tests via Vitest in jsdom environment.
+
+### 4. Type Check
+
+```bash
+npm run typecheck
+```
+
+Executes TypeScript compilation check (`tsc --noEmit`) in strict mode.
+
+### 5. Linting & Formatting
+
+```bash
+# Run ESLint
+npm run lint
+
+# Format code with Prettier
+npm run format
+
+# Verify formatting without modifying files
+npm run format:check
+```
+
+### 6. Production Build & Preview
+
+```bash
+npm run build
+npm run preview
+```
 
 ---
 
-## 🗺️ High-Level Roadmap Overview
+## 📚 Core Architecture & Documentation
 
-| Phase Group | Phases | Key Focus |
-| :--- | :--- | :--- |
-| **Foundations & Shell** | 0 – 3 | Contract, Tooling, Custom Design System, Application Shell |
-| **Core Data & Organization** | 4 – 10 | Local Storage, Projects, Chats, Notes, Tasks & Decision Log |
-| **Brain & Search** | 11 – 14 | Relational Entity Graph, Project Memory, Full-Text Search, Provenance |
-| **Universal Import** | 15 – 18 | Provider Adapters (ChatGPT/Claude/Gemini), Inbox Staging, Versioning |
-| **Power Tools & Hardening** | 19 – 24 | Command Palette, Rule Automations, Extension, Web Release |
-| **Desktop & Windows** | 25 – 32 | Tauri Shell, System Tray, SQLite/Local FS, Backups, Installer, QA |
+All architectural contracts and specifications are located in `/docs`:
+
+- **[Product Contract](file:///c:/WorkBench/docs/PRODUCT_CONTRACT.md)**: Product scope, 8 core pillars, and the **No-LLM** rule.
+- **[Engineering Principles](file:///c:/WorkBench/docs/ENGINEERING_PRINCIPLES.md)**: Strict typing, performance targets, defensive security, and code quality standards.
+- **[Architecture Principles](file:///c:/WorkBench/docs/ARCHITECTURE_PRINCIPLES.md)**: Normalized data pipeline, provider isolation, and non-LLM WorkBench Brain.
+- **[Phase 1 Architecture Reference](file:///c:/WorkBench/docs/ARCHITECTURE_FOUNDATION_PHASE1.md)**: Layered system design, repository abstractions, and state taxonomy.
+- **[Terminology Glossary](file:///c:/WorkBench/docs/GLOSSARY.md)**: Standardized domain lexicon.
+- **[33-Phase Roadmap](file:///c:/WorkBench/docs/ROADMAP.md)**: Immutable development roadmap from Phase 0 to Phase 32.
 
 ---
 
-## 🔒 Current Phase Status
+## 🏛️ Architectural Invariants
 
-- **Active Phase**: Phase 0 — Product & Engineering Contract
-- **Status**: **COMPLETE — READY FOR REVIEW**
-- **Next Phase**: Phase 1 — Repository & Architecture Foundation (Awaiting explicit instruction to begin)
+1. **Not an AI Chatbot**: WorkBench organizes external conversations; it does not wrap LLMs or generate AI text.
+2. **Deterministic WorkBench Brain**: Internal relational indexing and full-text search without neural models.
+3. **Local-First**: Complete functionality without mandatory internet access or cloud services.
+4. **Normalized Pipelines**: External provider formats (ChatGPT, Claude, Gemini) are normalized at the boundary and never leak into core logic.
+5. **Web to Desktop Strategy**: Web-first codebase designed for clean packaging into a native Windows desktop shell (Tauri) in Phase 25.

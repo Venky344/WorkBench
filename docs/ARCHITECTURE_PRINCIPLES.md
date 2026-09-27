@@ -36,11 +36,13 @@ WorkBench follows a layered, modular architecture designed for local-first execu
 External AI platforms and formats use wildly divergent schemas (e.g., ChatGPT conversation trees vs. Claude message lists vs. raw Markdown exports).
 
 ### The Invariant Rule
+
 **Provider-specific formats MUST NEVER leak into the core UI or persistence layers.**
 
 All imported or created content is parsed and transformed into a strictly typed, normalized WorkBench internal schema before entering the workspace or Inbox.
 
 ### Normalized Import Pipeline
+
 ```
 [ External Source (ChatGPT / Claude / Gemini / Web / File) ]
                         │
@@ -73,6 +75,7 @@ The term **WorkBench Brain** refers exclusively to the internal relational and i
 > The WorkBench Brain is **NOT** a neural network, LLM, or AI agent. It is a deterministic, high-performance relational engine and metadata index.
 
 ### Core Brain Responsibilities
+
 1. **Entity Graphing**: Maintains bidirectional links between Projects, Chats, Messages, Files, Notes, Code Snippets, Tasks, and Decisions.
 2. **Metadata & Tag Aggregation**: Manages tags, categories, timestamps, and custom attributes.
 3. **Full-Text Indexing**: Powers sub-50ms local full-text search across all content without cloud services.
@@ -81,6 +84,7 @@ The term **WorkBench Brain** refers exclusively to the internal relational and i
 6. **Activity & History Stream**: Records structured event logs for auditability, timelines, and recovery.
 
 ### Relational Model Example
+
 ```
 [ Project: CricAuction ]
    ├── [ Chat: CricHeroes Integration ] (Provider: ChatGPT, Shared URL)
@@ -94,6 +98,7 @@ The term **WorkBench Brain** refers exclusively to the internal relational and i
 ## 4. Universal Import Security & Provider Boundaries
 
 ### Security Boundary
+
 - WorkBench strictly imports content that the user legitimately owns or has authorized access to.
 - **Never design or implement mechanisms to:**
   - Bypass authentication barriers or paywalls
@@ -106,6 +111,7 @@ The term **WorkBench Brain** refers exclusively to the internal relational and i
   - Manual copy-paste and clipboard capture
 
 ### Provider Adapter Isolation
+
 Each provider (ChatGPT, Claude, Gemini, Perplexity, Generic Markdown, Web URLs) is implemented as a self-contained, isolated adapter module implementing a standard interface:
 
 ```typescript
@@ -160,12 +166,14 @@ WHEN [Event Trigger] ──► IF [Conditions (Optional)] ──► THEN [Action
 ```
 
 ### Key Principles
+
 - **Predictable**: No non-deterministic agentic decisions or hallucinations.
 - **Inspectable & Debuggable**: Every triggered automation generates a visible execution log.
 - **Reversible**: Where feasible, automated actions support undo/reversion.
 - **Lightweight**: Evaluated synchronously or in microtasks on local events without background server processes.
 
-*Example:*
+_Example:_
+
 - **WHEN**: `Conversation imported`
 - **IF**: `Provider == 'Claude'` AND `Title contains 'Database Schema'`
 - **THEN**: `Assign to Project 'Backend Refactor'`, `Add Tag #schema`
@@ -203,6 +211,7 @@ WorkBench follows an intentional, non-disruptive migration path:
 ```
 
 ### Architecture Rule
+
 The web application must be designed with clean abstraction layers so converting to desktop requires **no rewrites of UI, business logic, or data normalizers**.
 
 ---

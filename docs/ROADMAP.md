@@ -17,7 +17,8 @@
 ## 2. Phase-by-Phase Roadmap
 
 ### Part I: Foundations & Design (Phases 0–3)
-- **Phase 0 — Product & Engineering Contract** *(Current)*  
+
+- **Phase 0 — Product & Engineering Contract** _(Current)_  
   Establish permanent product scope, architectural boundaries, terminology, engineering standards, and roadmap.
 - **Phase 1 — Repository & Architecture Foundation**  
   Initialize project structure, TypeScript configuration, build tooling, linting, formatting, and directory conventions.
@@ -29,6 +30,7 @@
 ---
 
 ### Part II: Core Data, Projects & Organization (Phases 4–10)
+
 - **Phase 4 — Core Data Architecture**  
   Implement the local-first storage adapter layer, schema definitions, migration engine, and reactive data stores.
 - **Phase 5 — Projects**  
@@ -47,6 +49,7 @@
 ---
 
 ### Part III: WorkBench Brain & Search (Phases 11–14)
+
 - **Phase 11 — Workspace Brain**  
   Construct the non-LLM relational graph linking tasks, chats, decisions, files, and snippets across projects.
 - **Phase 12 — Project Memory / Context**  
@@ -59,6 +62,7 @@
 ---
 
 ### Part IV: Universal Import & Ingestion (Phases 15–18)
+
 - **Phase 15 — Universal Import Engine**  
   Build the extensible provider adapter pipeline, AST parsers, and schema normalizers.
 - **Phase 16 — ChatGPT / Claude / Gemini Import**  
@@ -71,6 +75,7 @@
 ---
 
 ### Part V: Power Tools, Automations & Workflow (Phases 19–24)
+
 - **Phase 19 — Quick Capture & Command Center**  
   Build global keyboard command palette (`Ctrl+K`), quick capture modal, and clipboard ingestion.
 - **Phase 20 — Automation Engine**  
@@ -87,6 +92,7 @@
 ---
 
 ### Part VI: Desktop Conversion & Windows Ecosystem (Phases 25–32)
+
 - **Phase 25 — Windows Desktop Conversion**  
   Package web application into lightweight native desktop shell using Tauri (Rust backend).
 - **Phase 26 — Native Windows Integrations**  
