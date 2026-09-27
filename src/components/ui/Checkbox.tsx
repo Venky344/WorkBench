@@ -13,7 +13,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       label,
       helperText,
       indeterminate = false,
-      checked = false,
+      checked,
+      defaultChecked,
       disabled = false,
       id: customId,
       className = '',
@@ -35,6 +36,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         element.indeterminate = indeterminate;
       }
     }, [indeterminate, forwardedRef]);
+
+    const isChecked = checked ?? defaultChecked ?? false;
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
@@ -64,6 +67,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               type="checkbox"
               id={id}
               checked={checked}
+              defaultChecked={defaultChecked}
               disabled={disabled}
               onChange={onChange}
               className={`wb-checkbox-native ${className}`}
@@ -84,12 +88,12 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
                 height: '1.125rem',
                 borderRadius: 'var(--wb-radius-sm)',
                 border: `1px solid ${
-                  checked || indeterminate
+                  isChecked || indeterminate
                     ? 'var(--wb-color-primary)'
                     : 'var(--wb-color-border-strong)'
                 }`,
                 backgroundColor:
-                  checked || indeterminate
+                  isChecked || indeterminate
                     ? 'var(--wb-color-primary)'
                     : 'var(--wb-color-bg-subtle)',
                 color: 'var(--wb-color-primary-fg)',
@@ -101,7 +105,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             >
               {indeterminate ? (
                 <Minus size={12} strokeWidth={3} />
-              ) : checked ? (
+              ) : isChecked ? (
                 <Check size={12} strokeWidth={3} />
               ) : null}
             </div>

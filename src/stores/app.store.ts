@@ -9,12 +9,16 @@ import { create } from 'zustand';
 
 export interface AppState {
   readonly isSidebarCollapsed: boolean;
+  readonly isCommandPaletteOpen: boolean;
+  readonly isQuickCaptureOpen: boolean;
   readonly activeModal: string | null;
   readonly isInitialized: boolean;
 
   // Actions
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
+  setCommandPaletteOpen: (open: boolean) => void;
+  setQuickCaptureOpen: (open: boolean) => void;
   openModal: (modalId: string) => void;
   closeModal: () => void;
   setInitialized: (initialized: boolean) => void;
@@ -22,12 +26,18 @@ export interface AppState {
 
 export const useAppStore = create<AppState>((set) => ({
   isSidebarCollapsed: false,
+  isCommandPaletteOpen: false,
+  isQuickCaptureOpen: false,
   activeModal: null,
   isInitialized: true,
 
   toggleSidebar: () => set((state) => ({ isSidebarCollapsed: !state.isSidebarCollapsed })),
 
   setSidebarCollapsed: (isSidebarCollapsed) => set({ isSidebarCollapsed }),
+
+  setCommandPaletteOpen: (isCommandPaletteOpen) => set({ isCommandPaletteOpen }),
+
+  setQuickCaptureOpen: (isQuickCaptureOpen) => set({ isQuickCaptureOpen }),
 
   openModal: (activeModal) => set({ activeModal }),
 

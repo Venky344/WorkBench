@@ -6,8 +6,9 @@ describe('Root Application Component', () => {
   it('should render the application shell and overview without crashing', () => {
     render(<App />);
 
-    expect(screen.getByText('WorkBench')).toBeInTheDocument();
-    expect(screen.getByText('Phase 2 Design System Ready')).toBeInTheDocument();
-    expect(screen.getByText('WorkBench Workspace Foundation')).toBeInTheDocument();
+    expect(screen.getByAltText('WorkBench Logo')).toBeInTheDocument();
+    expect(screen.getByText('Phase 3 App Shell Active')).toBeInTheDocument();
+    expect(screen.getByText('Welcome to WorkBench')).toBeInTheDocument();
+    expect(screen.getByRole('complementary', { name: 'Sidebar Navigation' })).toBeInTheDocument();
   });
 });
