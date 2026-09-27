@@ -1,0 +1,38 @@
+/* WorkBench Design System — Typography Tokens */
+
+:root {
+  --wb-font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji';
+  --wb-font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+
+  /* Font Sizes */
+  --wb-text-xs: 0.75rem; /* 12px */
+  --wb-text-sm: 0.875rem; /* 14px */
+  --wb-text-base: 1rem; /* 16px */
+  --wb-text-lg: 1.125rem; /* 18px */
+  --wb-text-xl: 1.25rem; /* 20px */
+  --wb-text-2xl: 1.5rem; /* 24px */
+  --wb-text-3xl: 1.875rem; /* 30px */
+  --wb-text-4xl: 2.25rem; /* 36px */
+
+  /* Line Heights */
+  --wb-leading-none: 1;
+  --wb-leading-tight: 1.25;
+  --wb-leading-snug: 1.375;
+  --wb-leading-normal: 1.5;
+  --wb-leading-relaxed: 1.625;
+
+  /* Font Weights */
+  --wb-weight-normal: 400;
+  --wb-weight-medium: 500;
+  --wb-weight-semibold: 600;
+  --wb-weight-bold: 700;
+
+  /* Letter Spacing */
+  --wb-tracking-tight: -0.025em;
+  --wb-tracking-normal: 0em;
+  --wb-tracking-wide: 0.025em;
+}

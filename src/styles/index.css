@@ -1,21 +1,9 @@
-:root {
-  --font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --bg-primary: #090d16;
-  --bg-secondary: #111827;
-  --bg-card: #1e293b;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --accent: #38bdf8;
-  --accent-hover: #0284c7;
-  --border-color: #1f2937;
-  --border-card: #334155;
-  --error: #f87171;
-  --success: #34d399;
-  --warning: #fbbf24;
-}
+@import './tokens/colors.css';
+@import './tokens/typography.css';
+@import './tokens/spacing.css';
+@import './tokens/motion.css';
 
+/* CSS Reset & Baseline */
 *,
 *::before,
 *::after {
@@ -28,11 +16,14 @@ html,
 body {
   height: 100%;
   width: 100%;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font-family);
+  background-color: var(--wb-color-bg);
+  color: var(--wb-color-fg);
+  font-family: var(--wb-font-sans);
+  font-size: 16px;
+  line-height: var(--wb-leading-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 #root {
@@ -41,9 +32,90 @@ body {
   flex-direction: column;
 }
 
+/* Accessible Focus Ring */
+:focus-visible {
+  outline: 2px solid var(--wb-color-primary);
+  outline-offset: 2px;
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--wb-color-bg-subtle);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--wb-color-border-strong);
+  border-radius: var(--wb-radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--wb-color-fg-subtle);
+}
+
+/* Base Form Control Resets */
 button,
 input,
 select,
 textarea {
   font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* Semantic Typography Utility Classes */
+.wb-display {
+  font-size: var(--wb-text-4xl);
+  font-weight: var(--wb-weight-bold);
+  line-height: var(--wb-leading-tight);
+  letter-spacing: var(--wb-tracking-tight);
+}
+
+.wb-h1 {
+  font-size: var(--wb-text-3xl);
+  font-weight: var(--wb-weight-bold);
+  line-height: var(--wb-leading-tight);
+  letter-spacing: var(--wb-tracking-tight);
+}
+
+.wb-h2 {
+  font-size: var(--wb-text-2xl);
+  font-weight: var(--wb-weight-semibold);
+  line-height: var(--wb-leading-snug);
+}
+
+.wb-h3 {
+  font-size: var(--wb-text-xl);
+  font-weight: var(--wb-weight-semibold);
+  line-height: var(--wb-leading-snug);
+}
+
+.wb-body-lg {
+  font-size: var(--wb-text-lg);
+  line-height: var(--wb-leading-relaxed);
+}
+
+.wb-body {
+  font-size: var(--wb-text-base);
+  line-height: var(--wb-leading-normal);
+}
+
+.wb-body-sm {
+  font-size: var(--wb-text-sm);
+  line-height: var(--wb-leading-normal);
+}
+
+.wb-caption {
+  font-size: var(--wb-text-xs);
+  line-height: var(--wb-leading-normal);
+  color: var(--wb-color-fg-subtle);
+}
+
+.wb-code {
+  font-family: var(--wb-font-mono);
+  font-size: 0.9em;
 }

@@ -1,0 +1,92 @@
+/* WorkBench Design System — Motion & Transition Tokens */
+
+:root {
+  --wb-duration-instant: 50ms;
+  --wb-duration-fast: 150ms;
+  --wb-duration-normal: 200ms;
+  --wb-duration-slow: 300ms;
+
+  --wb-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --wb-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --wb-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --wb-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --wb-transition-all: all var(--wb-duration-fast) var(--wb-ease-default);
+  --wb-transition-colors:
+    color var(--wb-duration-fast) var(--wb-ease-default),
+    background-color var(--wb-duration-fast) var(--wb-ease-default),
+    border-color var(--wb-duration-fast) var(--wb-ease-default);
+  --wb-transition-transform: transform var(--wb-duration-fast) var(--wb-ease-default);
+  --wb-transition-opacity: opacity var(--wb-duration-fast) var(--wb-ease-default);
+}
+
+@keyframes wb-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes wb-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes wb-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes wb-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes wb-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --wb-duration-instant: 0ms;
+    --wb-duration-fast: 0ms;
+    --wb-duration-normal: 0ms;
+    --wb-duration-slow: 0ms;
+    --wb-transition-all: none;
+    --wb-transition-colors: none;
+    --wb-transition-transform: none;
+    --wb-transition-opacity: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

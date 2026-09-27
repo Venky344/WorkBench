@@ -7,7 +7,7 @@ describe('Root Application Component', () => {
     render(<App />);
 
     expect(screen.getByText('WorkBench')).toBeInTheDocument();
-    expect(screen.getByText('Phase 1 Foundation Ready')).toBeInTheDocument();
-    expect(screen.getByText('WorkBench Architecture Foundation')).toBeInTheDocument();
+    expect(screen.getByText('Phase 2 Design System Ready')).toBeInTheDocument();
+    expect(screen.getByText('WorkBench Workspace Foundation')).toBeInTheDocument();
   });
 });

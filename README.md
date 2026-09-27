@@ -8,8 +8,18 @@ WorkBench is a lightweight personal digital work area designed to help a single 
 
 ## 📌 Development Status
 
-- **Current Phase**: **Phase 1 — Repository & Architecture Foundation** (Completed & Validated)
-- **Next Phase**: **Phase 2 — WorkBench Design System**
+- **Current Phase**: **Phase 2 — WorkBench Design System** (Completed & Validated)
+- **Next Phase**: **Phase 3 — Application Shell**
+
+---
+
+## 🎨 Design System & Component Showcase
+
+WorkBench features a centralized design system with semantic tokens, dark/light themes, and accessible UI primitives.
+
+Access the interactive showcase:
+
+- Run `npm run dev` and navigate to `http://localhost:3000/showcase` (or `/design-system`).
 
 ---
 
@@ -80,6 +90,7 @@ All architectural contracts and specifications are located in `/docs`:
 - **[Engineering Principles](file:///c:/WorkBench/docs/ENGINEERING_PRINCIPLES.md)**: Strict typing, performance targets, defensive security, and code quality standards.
 - **[Architecture Principles](file:///c:/WorkBench/docs/ARCHITECTURE_PRINCIPLES.md)**: Normalized data pipeline, provider isolation, and non-LLM WorkBench Brain.
 - **[Phase 1 Architecture Reference](file:///c:/WorkBench/docs/ARCHITECTURE_FOUNDATION_PHASE1.md)**: Layered system design, repository abstractions, and state taxonomy.
+- **[Phase 2 Design System Reference](file:///c:/WorkBench/docs/DESIGN_SYSTEM_PHASE2.md)**: Semantic design tokens, typography, spacing, component inventory, theme architecture, and accessibility standards.
 - **[Terminology Glossary](file:///c:/WorkBench/docs/GLOSSARY.md)**: Standardized domain lexicon.
 - **[33-Phase Roadmap](file:///c:/WorkBench/docs/ROADMAP.md)**: Immutable development roadmap from Phase 0 to Phase 32.
 

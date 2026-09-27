@@ -12,8 +12,8 @@ export const TechnicalShell: React.FC = () => {
         display: 'flex',
         flexDirection: 'column',
         minHeight: '100vh',
-        backgroundColor: '#090d16',
-        color: '#f1f5f9',
+        backgroundColor: 'var(--wb-color-bg)',
+        color: 'var(--wb-color-fg)',
       }}
     >
       <header
@@ -22,8 +22,8 @@ export const TechnicalShell: React.FC = () => {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '0.75rem 1.5rem',
-          backgroundColor: '#111827',
-          borderBottom: '1px solid #1f2937',
+          backgroundColor: 'var(--wb-color-surface)',
+          borderBottom: '1px solid var(--wb-color-border)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -32,9 +32,9 @@ export const TechnicalShell: React.FC = () => {
             data-testid="toggle-sidebar-btn"
             style={{
               background: 'transparent',
-              border: '1px solid #374151',
-              color: '#9ca3af',
-              borderRadius: '6px',
+              border: '1px solid var(--wb-color-border)',
+              color: 'var(--wb-color-fg-muted)',
+              borderRadius: 'var(--wb-radius-md)',
               padding: '0.35rem 0.65rem',
               cursor: 'pointer',
             }}
@@ -43,38 +43,56 @@ export const TechnicalShell: React.FC = () => {
             {isSidebarCollapsed ? '☰' : '✕'}
           </button>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
-            <h1 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#38bdf8' }}>
+            <h1
+              style={{
+                margin: 0,
+                fontSize: 'var(--wb-text-lg)',
+                fontWeight: 'var(--wb-weight-bold)',
+                color: 'var(--wb-color-primary)',
+              }}
+            >
               {appConfig.name}
             </h1>
-            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
-              v{appConfig.version} (Phase 1 Foundation)
+            <span style={{ fontSize: 'var(--wb-text-xs)', color: 'var(--wb-color-fg-subtle)' }}>
+              v{appConfig.version} (Phase 2 Design System)
             </span>
           </div>
         </div>
 
-        <nav style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        <nav style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
           <Link
             to="/"
             style={{
-              color: '#93c5fd',
+              color: 'var(--wb-color-fg-muted)',
               textDecoration: 'none',
-              fontSize: '0.875rem',
-              fontWeight: 500,
+              fontSize: 'var(--wb-text-sm)',
+              fontWeight: 'var(--wb-weight-medium)',
             }}
           >
             Overview
           </Link>
-          <span
+          <Link
+            to="/showcase"
             style={{
-              fontSize: '0.75rem',
-              padding: '0.2rem 0.6rem',
-              backgroundColor: '#064e3b',
-              color: '#6ee7b7',
-              borderRadius: '9999px',
-              fontWeight: 600,
+              color: 'var(--wb-color-primary)',
+              textDecoration: 'none',
+              fontSize: 'var(--wb-text-sm)',
+              fontWeight: 'var(--wb-weight-medium)',
             }}
           >
-            Phase 1 Foundation Ready
+            Design System Showcase
+          </Link>
+          <span
+            style={{
+              fontSize: 'var(--wb-text-xs)',
+              padding: '0.2rem 0.6rem',
+              backgroundColor: 'var(--wb-color-success-subtle)',
+              color: 'var(--wb-color-success)',
+              borderRadius: 'var(--wb-radius-full)',
+              fontWeight: 'var(--wb-weight-semibold)',
+            }}
+          >
+            Phase 2 Design System Ready
           </span>
         </nav>
       </header>

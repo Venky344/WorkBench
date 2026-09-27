@@ -4,6 +4,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { TechnicalShell } from '@/components/layout/TechnicalShell';
 import { HomePage } from '@/pages/HomePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
+import { DesignSystemShowcasePage } from '@/pages/DesignSystemShowcasePage';
 
 const createTestRouter = (initialEntries: string[]) => {
   return createMemoryRouter(
@@ -16,6 +17,10 @@ const createTestRouter = (initialEntries: string[]) => {
           {
             index: true,
             element: <HomePage />,
+          },
+          {
+            path: 'showcase',
+            element: <DesignSystemShowcasePage />,
           },
           {
             path: '*',
@@ -38,7 +43,15 @@ describe('Routing Foundation', () => {
     const router = createTestRouter(['/']);
     render(<RouterProvider router={router} future={{ v7_startTransition: true }} />);
 
-    expect(screen.getByText('WorkBench Architecture Foundation')).toBeInTheDocument();
+    expect(screen.getByText('WorkBench Workspace Foundation')).toBeInTheDocument();
+  });
+
+  it('renders DesignSystemShowcasePage at "/showcase"', () => {
+    const router = createTestRouter(['/showcase']);
+    render(<RouterProvider router={router} future={{ v7_startTransition: true }} />);
+
+    expect(screen.getByText('WorkBench Design System')).toBeInTheDocument();
+    expect(screen.getByText('UI Components')).toBeInTheDocument();
   });
 
   it('renders NotFoundPage for unknown paths', () => {
