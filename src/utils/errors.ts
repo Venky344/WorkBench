@@ -58,3 +58,17 @@ export class StorageError extends AppError {
     this.name = 'StorageError';
   }
 }
+
+export class DatabaseError extends AppError {
+  constructor(message: string, details?: unknown) {
+    super(message, { code: 'DATABASE_ERROR', details, recoverable: true });
+    this.name = 'DatabaseError';
+  }
+}
+
+export class SerializationError extends AppError {
+  constructor(message: string, details?: unknown) {
+    super(message, { code: 'SERIALIZATION_ERROR', details, recoverable: true });
+    this.name = 'SerializationError';
+  }
+}

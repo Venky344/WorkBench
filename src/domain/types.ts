@@ -1,30 +1,13 @@
-import { EntityId, ISOTimestamp } from '@/types';
+import { EntityId } from '@/types';
+import { BaseEntity } from './entities/base.entity';
+import { ProvenanceRecord } from './value-objects/provenance';
+
+export * from './entities';
+export * from './value-objects';
+export * from './validation';
 
 /**
- * Base contract for all persistent WorkBench entities
- */
-export interface BaseEntity {
-  readonly id: EntityId;
-  readonly createdAt: ISOTimestamp;
-  readonly updatedAt: ISOTimestamp;
-}
-
-/**
- * Provenance metadata tracking the origin of any imported artifact
- */
-export interface ProvenanceRecord {
-  readonly provider: 'chatgpt' | 'claude' | 'gemini' | 'perplexity' | 'web' | 'file' | 'manual';
-  readonly sourceUrl?: string;
-  readonly sourceConversationId?: string;
-  readonly sourceMessageId?: string;
-  readonly importedAt: ISOTimestamp;
-  readonly originalTitle?: string;
-  readonly externalId?: string;
-  readonly contentType: 'chat' | 'note' | 'code' | 'pdf' | 'html' | 'link';
-}
-
-/**
- * Domain entity contract stubs establishing boundaries for future phases
+ * Backwards compatibility stubs for Phase 1-3 imports
  */
 export interface WorkspaceStub extends BaseEntity {
   readonly name: string;
