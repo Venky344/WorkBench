@@ -74,9 +74,11 @@ describe('Routing Foundation with AppShell', () => {
     });
   });
 
-  it('renders ChatsPage at "/chats"', () => {
+  it('renders ChatsPage at "/chats"', async () => {
     renderWithProviders(['/chats']);
-    expect(screen.getByRole('heading', { name: 'Conversations', level: 1 })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /Conversations/i, level: 1 })).toBeInTheDocument();
+    });
   });
 
   it('renders InboxPage at "/inbox"', () => {

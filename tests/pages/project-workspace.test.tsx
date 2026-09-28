@@ -114,9 +114,7 @@ describe('Project Workspace Experience', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Project Conversations')).toBeInTheDocument();
-      expect(
-        screen.getByText(/Chat management is scheduled for implementation in Phase 7/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText('No conversations yet')).toBeInTheDocument();
     });
 
     // 2. Navigate to Files tab

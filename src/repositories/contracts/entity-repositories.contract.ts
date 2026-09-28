@@ -52,8 +52,12 @@ export interface IChatRepository extends IRepository<Chat> {
   findByProjectId(projectId: EntityId): Promise<readonly Chat[]>;
   findByChatGroupId(chatGroupId: EntityId): Promise<readonly Chat[]>;
   findBySourceId(sourceId: EntityId): Promise<readonly Chat[]>;
+  findByWorkspaceId(workspaceId: EntityId): Promise<readonly Chat[]>;
+  findActive(projectId: EntityId): Promise<readonly Chat[]>;
   findPinned(projectId: EntityId): Promise<readonly Chat[]>;
+  findFavorites(projectId: EntityId): Promise<readonly Chat[]>;
   findArchived(projectId: EntityId): Promise<readonly Chat[]>;
+  findUngrouped(projectId: EntityId): Promise<readonly Chat[]>;
 }
 
 export interface IMessageRepository extends IRepository<Message> {
@@ -64,6 +68,8 @@ export interface IMessageRepository extends IRepository<Message> {
 
 export interface IChatGroupRepository extends IRepository<ChatGroup> {
   findByProjectId(projectId: EntityId): Promise<readonly ChatGroup[]>;
+  findPinned(projectId: EntityId): Promise<readonly ChatGroup[]>;
+  existsByName(projectId: EntityId, name: string, excludeId?: EntityId): Promise<boolean>;
 }
 
 export interface IFileRepository extends IRepository<FileEntity> {

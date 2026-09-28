@@ -30,10 +30,11 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ customSegments, classN
   const location = useLocation();
   const services = useOptionalServices();
   const projectService = services?.projectService;
+  const chatService = services?.chatService;
   const [resolvedNames, setResolvedNames] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (!projectService) return;
+    if (!services) return;
 
     const pathnames = location.pathname.split('/').filter(Boolean);
     const uuidSegments = pathnames.filter((seg) => UUID_REGEX.test(seg));
@@ -41,16 +42,25 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ customSegments, classN
     uuidSegments.forEach(async (id) => {
       if (!resolvedNames[id]) {
         try {
-          const project = await projectService.findProject(id);
-          if (project) {
-            setResolvedNames((prev) => ({ ...prev, [id]: project.name }));
+          if (projectService) {
+            const project = await projectService.findProject(id);
+            if (project) {
+              setResolvedNames((prev) => ({ ...prev, [id]: project.name }));
+              return;
+            }
+          }
+          if (chatService) {
+            const chat = await chatService.getChat(id);
+            if (chat) {
+              setResolvedNames((prev) => ({ ...prev, [id]: chat.title }));
+            }
           }
         } catch {
           // Ignore lookup failures for breadcrumb resolution
         }
       }
     });
-  }, [location.pathname, projectService, resolvedNames]);
+  }, [location.pathname, services, projectService, chatService, resolvedNames]);
 
   const getSegments = () => {
     if (customSegments && customSegments.length > 0) {

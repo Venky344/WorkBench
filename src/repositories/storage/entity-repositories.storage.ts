@@ -149,6 +149,13 @@ export class ChatStorageRepository extends StorageRepository<Chat> implements IC
     });
   }
 
+  async findByWorkspaceId(workspaceId: EntityId): Promise<readonly Chat[]> {
+    return this.storage.find<Chat>(this.storeName, {
+      indexName: 'by_workspaceId',
+      indexValue: workspaceId,
+    });
+  }
+
   async findByChatGroupId(chatGroupId: EntityId): Promise<readonly Chat[]> {
     return this.storage.find<Chat>(this.storeName, {
       indexName: 'by_chatGroupId',
@@ -163,15 +170,33 @@ export class ChatStorageRepository extends StorageRepository<Chat> implements IC
     });
   }
 
+  async findActive(projectId: EntityId): Promise<readonly Chat[]> {
+    return this.storage.find<Chat>(this.storeName, {
+      predicate: (c) => c.projectId === projectId && !c.isArchived,
+    });
+  }
+
   async findPinned(projectId: EntityId): Promise<readonly Chat[]> {
     return this.storage.find<Chat>(this.storeName, {
-      predicate: (c) => c.projectId === projectId && c.isPinned,
+      predicate: (c) => c.projectId === projectId && c.isPinned && !c.isArchived,
+    });
+  }
+
+  async findFavorites(projectId: EntityId): Promise<readonly Chat[]> {
+    return this.storage.find<Chat>(this.storeName, {
+      predicate: (c) => c.projectId === projectId && c.isFavorite && !c.isArchived,
     });
   }
 
   async findArchived(projectId: EntityId): Promise<readonly Chat[]> {
     return this.storage.find<Chat>(this.storeName, {
       predicate: (c) => c.projectId === projectId && c.isArchived,
+    });
+  }
+
+  async findUngrouped(projectId: EntityId): Promise<readonly Chat[]> {
+    return this.storage.find<Chat>(this.storeName, {
+      predicate: (c) => c.projectId === projectId && !c.chatGroupId && !c.isArchived,
     });
   }
 }
@@ -219,6 +244,24 @@ export class ChatGroupStorageRepository
       indexValue: projectId,
     });
     return [...groups].sort((a, b) => a.order - b.order);
+  }
+
+  async findPinned(projectId: EntityId): Promise<readonly ChatGroup[]> {
+    const groups = await this.storage.find<ChatGroup>(this.storeName, {
+      predicate: (g) => g.projectId === projectId && !!g.isPinned,
+    });
+    return [...groups].sort((a, b) => a.order - b.order);
+  }
+
+  async existsByName(projectId: EntityId, name: string, excludeId?: EntityId): Promise<boolean> {
+    const trimmed = name.trim().toLowerCase();
+    const results = await this.storage.find<ChatGroup>(this.storeName, {
+      predicate: (g) =>
+        g.projectId === projectId &&
+        g.name.trim().toLowerCase() === trimmed &&
+        (!excludeId || g.id !== excludeId),
+    });
+    return results.length > 0;
   }
 }
 

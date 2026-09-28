@@ -4,6 +4,8 @@ import { ServiceContainer } from '@/services/container';
 import { ProjectService } from '@/services/project.service';
 import { WorkspaceService } from '@/services/workspace.service';
 import { StorageService } from '@/services/storage.service';
+import { ChatService } from '@/services/chat.service';
+import { ChatGroupService } from '@/services/chat-group.service';
 import { Workspace, User } from '@/domain/entities';
 
 export interface WorkspaceContextValue {
@@ -28,6 +30,14 @@ export const useServices = (): ServiceContainer => {
 
 export const useProjectService = (): ProjectService => {
   return useServices().projectService;
+};
+
+export const useChatService = (): ChatService => {
+  return useServices().chatService;
+};
+
+export const useChatGroupService = (): ChatGroupService => {
+  return useServices().chatGroupService;
 };
 
 export const useWorkspaceService = (): WorkspaceService => {

@@ -72,3 +72,10 @@ export class SerializationError extends AppError {
     this.name = 'SerializationError';
   }
 }
+
+export class ConflictError extends AppError {
+  constructor(message: string, details?: unknown) {
+    super(message, { code: 'CONFLICT_ERROR', details, recoverable: true });
+    this.name = 'ConflictError';
+  }
+}

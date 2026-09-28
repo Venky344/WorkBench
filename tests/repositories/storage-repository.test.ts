@@ -96,6 +96,7 @@ describe('Specialized Storage Repositories', () => {
       projectId,
       title: 'Architecture Discussion',
       isPinned: true,
+      isFavorite: false,
       isArchived: false,
       messageCount: 2,
       order: 0,

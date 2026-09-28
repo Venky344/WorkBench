@@ -10,6 +10,8 @@ export interface ChatGroup extends BaseEntity {
   readonly name: string;
   readonly description?: string;
   readonly color?: string;
+  readonly icon?: string;
   readonly order: number;
+  readonly isPinned?: boolean;
   readonly isCollapsed: boolean;
 }
