@@ -13,6 +13,11 @@ export interface WorkspaceContextValue {
   readonly refreshWorkspace: () => Promise<void>;
 }
 
+export const useOptionalServices = (): ServiceContainer | null => {
+  const context = useContext(ServiceContext);
+  return context ? context.services : null;
+};
+
 export const useServices = (): ServiceContainer => {
   const context = useContext(ServiceContext);
   if (!context) {

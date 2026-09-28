@@ -1,19 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronRight, Home } from 'lucide-react';
+import { useOptionalServices } from '@/app/providers';
 
 const ROUTE_LABELS: Record<string, string> = {
   '': 'Home',
   projects: 'Projects',
   chats: 'Conversations',
-  inbox: 'Inbox',
+  files: 'Files',
+  notes: 'Notes',
   tasks: 'Tasks',
   decisions: 'Decision Log',
   resources: 'Resources',
+  activity: 'Activity',
+  inbox: 'Inbox',
   settings: 'Settings',
   showcase: 'Design System Showcase',
   'design-system': 'Design System Showcase',
 };
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export interface BreadcrumbsProps {
   customSegments?: Array<{ label: string; href?: string }>;
@@ -22,13 +28,36 @@ export interface BreadcrumbsProps {
 
 export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ customSegments, className = '' }) => {
   const location = useLocation();
+  const services = useOptionalServices();
+  const projectService = services?.projectService;
+  const [resolvedNames, setResolvedNames] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (!projectService) return;
+
+    const pathnames = location.pathname.split('/').filter(Boolean);
+    const uuidSegments = pathnames.filter((seg) => UUID_REGEX.test(seg));
+
+    uuidSegments.forEach(async (id) => {
+      if (!resolvedNames[id]) {
+        try {
+          const project = await projectService.findProject(id);
+          if (project) {
+            setResolvedNames((prev) => ({ ...prev, [id]: project.name }));
+          }
+        } catch {
+          // Ignore lookup failures for breadcrumb resolution
+        }
+      }
+    });
+  }, [location.pathname, projectService, resolvedNames]);
 
   const getSegments = () => {
     if (customSegments && customSegments.length > 0) {
       return customSegments;
     }
 
-    const pathnames = location.pathname.split('/').filter((x) => x);
+    const pathnames = location.pathname.split('/').filter(Boolean);
     if (pathnames.length === 0) {
       return [{ label: 'Home', href: '/' }];
     }
@@ -39,7 +68,10 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ customSegments, classN
     pathnames.forEach((segment, index) => {
       currentPath += `/${segment}`;
       const isLast = index === pathnames.length - 1;
-      const label = ROUTE_LABELS[segment.toLowerCase()] || decodeURIComponent(segment);
+      const label =
+        resolvedNames[segment] ||
+        ROUTE_LABELS[segment.toLowerCase()] ||
+        decodeURIComponent(segment);
       segments.push({
         label,
         href: isLast ? undefined : currentPath,

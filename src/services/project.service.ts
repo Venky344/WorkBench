@@ -17,6 +17,7 @@ export interface CreateProjectParams {
   color?: string;
   icon?: string;
   tags?: readonly string[];
+  instructions?: string;
 }
 
 export interface UpdateProjectParams {
@@ -25,6 +26,7 @@ export interface UpdateProjectParams {
   color?: string;
   icon?: string;
   tags?: readonly string[];
+  instructions?: string;
 }
 
 export interface ListProjectsOptions {
@@ -138,6 +140,7 @@ export class ProjectService extends BaseService {
       description: params.description?.trim() || undefined,
       color: params.color || 'blue',
       icon: params.icon || 'folder',
+      instructions: params.instructions?.trim() || undefined,
       isArchived: false,
       isPinned: false,
       order: existingCount,
@@ -188,6 +191,10 @@ export class ProjectService extends BaseService {
           : current.description,
       color: params.color !== undefined ? params.color : current.color,
       icon: params.icon !== undefined ? params.icon : current.icon,
+      instructions:
+        params.instructions !== undefined
+          ? params.instructions.trim() || undefined
+          : current.instructions,
       tags: params.tags !== undefined ? Object.freeze([...params.tags]) : current.tags,
       updatedAt: now,
     };

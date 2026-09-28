@@ -11,6 +11,7 @@ export interface Project extends BaseEntity {
   readonly description?: string;
   readonly color?: string;
   readonly icon?: string;
+  readonly instructions?: string;
   readonly isArchived: boolean;
   readonly archivedAt?: ISOTimestamp;
   readonly isPinned: boolean;
