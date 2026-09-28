@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Dialog, DialogFooter, Button, Input, Textarea, Select } from '@/components/ui';
+import { TagPicker } from '@/components/organization';
 import { useChatService, useWorkspaceContext } from '@/app/providers';
 import { Chat, ChatGroup } from '@/domain/entities';
 import { EntityId } from '@/types';
@@ -29,7 +30,7 @@ export const CreateChatDialog: React.FC<CreateChatDialogProps> = ({
   const [description, setDescription] = useState('');
   const [groupId, setGroupId] = useState<string>(defaultGroupId ?? '');
   const [source, setSource] = useState('manual');
-  const [tagInput, setTagInput] = useState('');
+  const [selectedTagIds, setSelectedTagIds] = useState<readonly EntityId[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -45,7 +46,7 @@ export const CreateChatDialog: React.FC<CreateChatDialogProps> = ({
     setDescription('');
     setGroupId(defaultGroupId ?? '');
     setSource('manual');
-    setTagInput('');
+    setSelectedTagIds([]);
     setError(null);
     setIsSubmitting(false);
   };
@@ -72,11 +73,6 @@ export const CreateChatDialog: React.FC<CreateChatDialogProps> = ({
     setIsSubmitting(true);
 
     try {
-      const tags = tagInput
-        .split(',')
-        .map((t) => t.trim().replace(/^#/, ''))
-        .filter(Boolean);
-
       const created = await chatService.createChat({
         workspaceId: workspace.id,
         projectId,
@@ -84,7 +80,7 @@ export const CreateChatDialog: React.FC<CreateChatDialogProps> = ({
         title: trimmedTitle,
         description: description.trim() || undefined,
         source: source.trim() || 'manual',
-        tags,
+        tags: selectedTagIds,
       });
 
       toast.success(`Conversation "${created.title}" created.`, 'Chat Created');
@@ -170,13 +166,15 @@ export const CreateChatDialog: React.FC<CreateChatDialogProps> = ({
         />
 
         {/* Tags */}
-        <Input
-          id="create-chat-tags"
-          label="Tags (Comma separated, optional)"
-          placeholder="architecture, auth, sprint-1"
-          value={tagInput}
-          onChange={(e) => setTagInput(e.target.value)}
-        />
+        {workspace && (
+          <TagPicker
+            workspaceId={workspace.id}
+            selectedTagIds={selectedTagIds}
+            onChange={setSelectedTagIds}
+            label="Tags (Optional)"
+            placeholder="Assign or create tags for this conversation..."
+          />
+        )}
 
         <DialogFooter style={{ marginTop: '0.5rem' }}>
           <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>

@@ -25,13 +25,12 @@ import {
   Archive,
   RefreshCw,
   Trash2,
-  Calendar,
-  Clock,
   FolderKanban,
   Info,
 } from 'lucide-react';
 import { EditChatDialog, MoveChatDialog, DeleteChatDialog } from '@/components/chats';
 import { getChatGroupColorVar } from '@/components/chats/chat-theme';
+import { OrganizationPanel } from '@/components/organization';
 import { toast } from '@/stores/toast.store';
 
 export const ChatDetailPage: React.FC = () => {
@@ -386,15 +385,40 @@ export const ChatDetailPage: React.FC = () => {
         )}
       </Card>
 
-      {/* Metadata Overview Cards */}
+      {/* Metadata Overview & Organization Panel */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: '1rem',
         }}
       >
-        {/* Organization Scope */}
+        {/* Full Organization Panel */}
+        <OrganizationPanel
+          workspaceId={project.workspaceId}
+          entityType="chat"
+          selectedTagIds={chat.tags ?? []}
+          onTagsChange={async (tagIds) => {
+            try {
+              const updated = await chatService.updateChat(chat.id, { tags: tagIds });
+              setChat(updated);
+              toast.success('Tags updated successfully', 'Tags Saved');
+            } catch {
+              toast.error('Failed to update tags');
+            }
+          }}
+          isPinned={chat.isPinned}
+          onTogglePin={handleTogglePin}
+          isFavorite={chat.isFavorite}
+          onToggleFavorite={handleToggleFavorite}
+          isArchived={chat.isArchived}
+          onToggleArchive={handleToggleArchive}
+          createdAt={chat.createdAt}
+          updatedAt={chat.updatedAt}
+          lastActivityAt={chat.lastActivityAt}
+        />
+
+        {/* Organization Scope & Context */}
         <Card variant="default">
           <CardHeader>
             <CardTitle
@@ -407,14 +431,14 @@ export const ChatDetailPage: React.FC = () => {
               }}
             >
               <FolderKanban size={16} color="var(--wb-color-primary)" />
-              <span>Organization & Context</span>
+              <span>Project Context & Origin</span>
             </CardTitle>
           </CardHeader>
           <CardContent
             style={{
               display: 'flex',
               flexDirection: 'column',
-              gap: '0.5rem',
+              gap: '0.75rem',
               fontSize: 'var(--wb-text-xs)',
             }}
           >
@@ -438,50 +462,10 @@ export const ChatDetailPage: React.FC = () => {
               <span style={{ color: 'var(--wb-color-fg-subtle)' }}>Chat ID: </span>
               <code style={{ fontSize: '11px' }}>{chat.id}</code>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Timestamps */}
-        <Card variant="default">
-          <CardHeader>
-            <CardTitle
-              style={{
-                fontSize: 'var(--wb-text-sm)',
-                color: 'var(--wb-color-fg-muted)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}
-            >
-              <Clock size={16} color="var(--wb-color-primary)" />
-              <span>Timestamps & Activity</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              fontSize: 'var(--wb-text-xs)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Calendar size={14} color="var(--wb-color-fg-subtle)" />
-              <span style={{ color: 'var(--wb-color-fg-subtle)' }}>Created: </span>
-              <span>{new Date(chat.createdAt).toLocaleString()}</span>
+            <div>
+              <span style={{ color: 'var(--wb-color-fg-subtle)' }}>Workspace ID: </span>
+              <code style={{ fontSize: '11px' }}>{project.workspaceId}</code>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Clock size={14} color="var(--wb-color-fg-subtle)" />
-              <span style={{ color: 'var(--wb-color-fg-subtle)' }}>Last Updated: </span>
-              <span>{new Date(chat.updatedAt).toLocaleString()}</span>
-            </div>
-            {chat.archivedAt && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Archive size={14} color="var(--wb-color-warning)" />
-                <span style={{ color: 'var(--wb-color-fg-subtle)' }}>Archived At: </span>
-                <span>{new Date(chat.archivedAt).toLocaleString()}</span>
-              </div>
-            )}
           </CardContent>
         </Card>
       </div>

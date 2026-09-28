@@ -33,6 +33,7 @@ export interface ListProjectsOptions {
   filter?: ProjectFilter;
   sortBy?: ProjectSortBy;
   searchQuery?: string;
+  tagId?: string;
 }
 
 export class ProjectService extends BaseService {
@@ -85,6 +86,9 @@ export class ProjectService extends BaseService {
 
     // Apply client-side search query filtering if provided
     let result = [...projects];
+    if (options.tagId) {
+      result = result.filter((p) => p.tags.includes(options.tagId!));
+    }
     if (options.searchQuery && options.searchQuery.trim().length > 0) {
       const q = options.searchQuery.trim().toLowerCase();
       result = result.filter(

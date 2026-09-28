@@ -4,6 +4,7 @@ import { WorkspaceService } from './workspace.service';
 import { ProjectService } from './project.service';
 import { ChatService } from './chat.service';
 import { ChatGroupService } from './chat-group.service';
+import { TagService } from './tag.service';
 import { TaskService } from './task.service';
 import { DecisionService } from './decision.service';
 import { RelationshipService } from './relationship.service';
@@ -17,6 +18,7 @@ export interface ServiceContainer {
   readonly projectService: ProjectService;
   readonly chatService: ChatService;
   readonly chatGroupService: ChatGroupService;
+  readonly tagService: TagService;
   readonly taskService: TaskService;
   readonly decisionService: DecisionService;
   readonly relationshipService: RelationshipService;
@@ -39,6 +41,11 @@ export function createServiceContainer(storageEngine?: IStorageEngine): ServiceC
     storageService.chats,
     storageService.projects,
   );
+  const tagService = new TagService(
+    storageService.tags,
+    storageService.projects,
+    storageService.chats,
+  );
   const taskService = new TaskService(storageService.tasks);
   const decisionService = new DecisionService(storageService.decisions);
   const relationshipService = new RelationshipService(storageService.relationships);
@@ -53,6 +60,7 @@ export function createServiceContainer(storageEngine?: IStorageEngine): ServiceC
     projectService,
     chatService,
     chatGroupService,
+    tagService,
     taskService,
     decisionService,
     relationshipService,

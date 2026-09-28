@@ -4,6 +4,7 @@ export * from './workspace.service';
 export * from './project.service';
 export * from './chat.service';
 export * from './chat-group.service';
+export * from './tag.service';
 export * from './task.service';
 export * from './decision.service';
 export * from './relationship.service';

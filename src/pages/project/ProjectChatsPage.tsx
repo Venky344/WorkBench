@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { ProjectWorkspaceContextValue } from '@/components/project/ProjectWorkspace';
-import { useChatService, useChatGroupService } from '@/app/providers';
-import { Chat, ChatGroup } from '@/domain/entities';
+import { useChatService, useChatGroupService, useTagService } from '@/app/providers';
+import { Chat, ChatGroup, Tag } from '@/domain/entities';
+import { EntityId } from '@/types';
 import { Button, Input, Select, EmptyState, LoadingState, Badge } from '@/components/ui';
+import { TagBadge } from '@/components/organization';
 import {
   ChatCard,
   ChatGroupSection,
@@ -15,7 +17,7 @@ import {
   DeleteChatDialog,
   DeleteChatGroupDialog,
 } from '@/components/chats';
-import { Plus, Search, MessageSquare, FolderPlus, Layers } from 'lucide-react';
+import { Plus, Search, MessageSquare, FolderPlus, Layers, Filter } from 'lucide-react';
 import { toast } from '@/stores/toast.store';
 
 export const ProjectChatsPage: React.FC = () => {
@@ -23,13 +25,16 @@ export const ProjectChatsPage: React.FC = () => {
   const navigate = useNavigate();
   const chatService = useChatService();
   const chatGroupService = useChatGroupService();
+  const tagService = useTagService();
 
   const [chats, setChats] = useState<readonly Chat[]>([]);
   const [groups, setGroups] = useState<readonly ChatGroup[]>([]);
+  const [availableTags, setAvailableTags] = useState<readonly Tag[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Filters and Sorting
   const [filterTab, setFilterTab] = useState<string>('active');
+  const [selectedTagId, setSelectedTagId] = useState<EntityId | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'updatedAt' | 'createdAt' | 'title'>('updatedAt');
 
@@ -52,21 +57,23 @@ export const ProjectChatsPage: React.FC = () => {
   const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [loadedChats, loadedGroups] = await Promise.all([
+      const [loadedChats, loadedGroups, loadedTags] = await Promise.all([
         chatService.listChats(project.id, {
           status: 'all', // We filter locally or via service
           sortBy: 'updatedAt',
         }),
         chatGroupService.listGroups(project.id),
+        tagService.listTags(project.workspaceId),
       ]);
       setChats(loadedChats);
       setGroups(loadedGroups);
+      setAvailableTags(loadedTags);
     } catch {
       toast.error('Failed to load project conversations', 'Error');
     } finally {
       setIsLoading(false);
     }
-  }, [chatService, chatGroupService, project.id]);
+  }, [chatService, chatGroupService, tagService, project.id, project.workspaceId]);
 
   useEffect(() => {
     loadData();
@@ -85,6 +92,11 @@ export const ProjectChatsPage: React.FC = () => {
       result = result.filter((c) => c.isFavorite && !c.isArchived);
     } else if (filterTab === 'archived') {
       result = result.filter((c) => c.isArchived);
+    }
+
+    // Tag filter
+    if (selectedTagId) {
+      result = result.filter((c) => c.tags && c.tags.includes(selectedTagId));
     }
 
     // Search query filter
@@ -113,7 +125,7 @@ export const ProjectChatsPage: React.FC = () => {
     });
 
     return result;
-  }, [chats, filterTab, searchQuery, sortBy]);
+  }, [chats, filterTab, selectedTagId, searchQuery, sortBy]);
 
   // Group chats by group ID
   const groupedChats = React.useMemo(() => {
@@ -231,7 +243,6 @@ export const ProjectChatsPage: React.FC = () => {
   }
 
   const hasAnyChatsOrGroups = chats.length > 0 || groups.length > 0;
-  const isFilteringActive = searchQuery.trim().length > 0 || filterTab !== 'active';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -385,29 +396,83 @@ export const ProjectChatsPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Search bar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ flex: 1 }}>
-              <Input
-                id="search-chats-input"
-                placeholder="Search conversations by title, description, or tags..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                leftIcon={<Search size={15} />}
-              />
+          {/* Search bar & Tag Pills */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ flex: 1 }}>
+                <Input
+                  id="search-chats-input"
+                  placeholder="Search conversations by title, description, or tags..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  leftIcon={<Search size={15} />}
+                />
+              </div>
+              {(searchQuery.trim().length > 0 ||
+                filterTab !== 'active' ||
+                selectedTagId !== null) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setFilterTab('active');
+                    setSelectedTagId(null);
+                  }}
+                  style={{ fontSize: 'var(--wb-text-xs)' }}
+                >
+                  Reset Filters
+                </Button>
+              )}
             </div>
-            {isFilteringActive && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSearchQuery('');
-                  setFilterTab('active');
+
+            {availableTags.length > 0 && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.375rem',
+                  flexWrap: 'wrap',
                 }}
-                style={{ fontSize: 'var(--wb-text-xs)' }}
               >
-                Reset Filters
-              </Button>
+                <span
+                  style={{
+                    fontSize: 'var(--wb-text-xs)',
+                    color: 'var(--wb-color-fg-muted)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.25rem',
+                    marginRight: '0.25rem',
+                  }}
+                >
+                  <Filter size={12} /> Tags:
+                </span>
+
+                {availableTags.map((tag) => {
+                  const isSelected = selectedTagId === tag.id;
+                  return (
+                    <TagBadge
+                      key={tag.id}
+                      tag={tag}
+                      size="sm"
+                      interactive
+                      isSelected={isSelected}
+                      onClick={() => setSelectedTagId(isSelected ? null : tag.id)}
+                    />
+                  );
+                })}
+
+                {selectedTagId && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedTagId(null)}
+                    style={{ padding: '0.125rem 0.375rem', fontSize: '11px', height: 'auto' }}
+                  >
+                    Clear Tag
+                  </Button>
+                )}
+              </div>
             )}
           </div>
         </div>

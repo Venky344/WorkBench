@@ -1,25 +1,30 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Project } from '@/domain/entities';
-import { useProjectService, useWorkspaceContext } from '@/app/providers';
-import { Button, Input, Select, EmptyState, ErrorState, Skeleton } from '@/components/ui';
+import { Project, Tag } from '@/domain/entities';
+import { EntityId } from '@/types';
+import { useProjectService, useTagService, useWorkspaceContext } from '@/app/providers';
+import { Button, EmptyState, ErrorState, Skeleton, Select } from '@/components/ui';
 import {
   ProjectCard,
   CreateProjectDialog,
   EditProjectDialog,
   DeleteProjectDialog,
 } from '@/components/projects';
-import { Plus, Search, FolderKanban } from 'lucide-react';
+import { OrganizationFilters } from '@/components/organization';
+import { Plus, FolderKanban } from 'lucide-react';
 import { toast } from '@/stores/toast.store';
 import { ProjectFilter, ProjectSortBy } from '@/services/project.service';
 
 export const ProjectsPage: React.FC = () => {
   const navigate = useNavigate();
   const projectService = useProjectService();
+  const tagService = useTagService();
   const { workspace, isReady } = useWorkspaceContext();
 
   const [projects, setProjects] = useState<readonly Project[]>([]);
+  const [availableTags, setAvailableTags] = useState<readonly Tag[]>([]);
   const [filter, setFilter] = useState<ProjectFilter>('active');
+  const [selectedTagId, setSelectedTagId] = useState<EntityId | null>(null);
   const [sortBy, setSortBy] = useState<ProjectSortBy>('updatedAt');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -30,6 +35,16 @@ export const ProjectsPage: React.FC = () => {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [deletingProject, setDeletingProject] = useState<Project | null>(null);
 
+  const loadTags = useCallback(async () => {
+    if (!workspace) return;
+    try {
+      const tags = await tagService.listTags(workspace.id);
+      setAvailableTags(tags);
+    } catch {
+      // Tags fallback
+    }
+  }, [workspace, tagService]);
+
   const loadProjects = useCallback(async () => {
     if (!workspace) return;
     setIsLoading(true);
@@ -39,6 +54,7 @@ export const ProjectsPage: React.FC = () => {
         filter,
         sortBy,
         searchQuery,
+        tagId: selectedTagId || undefined,
       });
       setProjects(list);
     } catch (err) {
@@ -47,13 +63,14 @@ export const ProjectsPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [workspace, projectService, filter, sortBy, searchQuery]);
+  }, [workspace, projectService, filter, sortBy, searchQuery, selectedTagId]);
 
   useEffect(() => {
     if (isReady && workspace) {
+      void loadTags();
       void loadProjects();
     }
-  }, [isReady, workspace, loadProjects]);
+  }, [isReady, workspace, loadTags, loadProjects]);
 
   // Handlers
   const handleOpenProject = (project: Project) => {
@@ -161,78 +178,44 @@ export const ProjectsPage: React.FC = () => {
       </div>
 
       {/* Filter and Control Bar */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '1rem',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-        }}
-      >
-        {/* Filter Buttons */}
-        <div
-          role="tablist"
-          aria-label="Filter Projects"
-          style={{
-            display: 'flex',
-            gap: '0.375rem',
-            backgroundColor: 'var(--wb-color-surface-card)',
-            padding: '0.25rem',
-            borderRadius: 'var(--wb-radius-md)',
-            border: '1px solid var(--wb-color-border-subtle)',
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <OrganizationFilters
+          statusOptions={[
+            { id: 'active', label: 'Active' },
+            { id: 'pinned', label: 'Pinned' },
+            { id: 'archived', label: 'Archived' },
+            { id: 'all', label: 'All Projects' },
+          ]}
+          activeStatus={filter}
+          onStatusChange={(status) => setFilter(status as ProjectFilter)}
+          availableTags={availableTags}
+          selectedTagId={selectedTagId}
+          onTagSelect={setSelectedTagId}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onClearFilters={() => {
+            setFilter('active');
+            setSelectedTagId(null);
+            setSearchQuery('');
           }}
-        >
-          {(['active', 'pinned', 'archived', 'all'] as const).map((tab) => {
-            const isActive = filter === tab;
-            return (
-              <button
-                key={tab}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setFilter(tab)}
-                style={{
-                  padding: '0.375rem 0.75rem',
-                  fontSize: 'var(--wb-text-xs)',
-                  fontWeight: isActive ? 'var(--wb-weight-semibold)' : 'var(--wb-weight-medium)',
-                  borderRadius: 'var(--wb-radius-sm)',
-                  border: 'none',
-                  backgroundColor: isActive ? 'var(--wb-color-surface-active)' : 'transparent',
-                  color: isActive ? 'var(--wb-color-fg)' : 'var(--wb-color-fg-muted)',
-                  cursor: 'pointer',
-                  textTransform: 'capitalize',
-                  transition: 'var(--wb-transition-colors)',
-                }}
-              >
-                {tab}
-              </button>
-            );
-          })}
-        </div>
+          searchPlaceholder="Search projects..."
+          isFiltered={
+            filter !== 'active' || selectedTagId !== null || searchQuery.trim().length > 0
+          }
+        />
 
-        {/* Search & Sort Controls */}
         <div
           style={{
             display: 'flex',
-            gap: '0.75rem',
-            alignItems: 'center',
-            flex: 1,
             justifyContent: 'flex-end',
-            minWidth: '280px',
+            alignItems: 'center',
+            gap: '0.5rem',
           }}
         >
-          <div style={{ maxWidth: '260px', width: '100%' }}>
-            <Input
-              id="search-projects-input"
-              placeholder="Search projects..."
-              leftIcon={<Search size={14} />}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-
-          <div style={{ width: '160px' }}>
+          <span style={{ fontSize: 'var(--wb-text-xs)', color: 'var(--wb-color-fg-muted)' }}>
+            Sort by:
+          </span>
+          <div style={{ width: '180px' }}>
             <Select
               id="sort-projects-select"
               aria-label="Sort projects by"

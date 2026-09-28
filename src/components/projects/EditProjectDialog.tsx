@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogFooter, Button, Input, Textarea } from '@/components/ui';
 import { ProjectColorPicker } from './ProjectColorPicker';
 import { ProjectIconPicker } from './ProjectIconPicker';
-import { useProjectService } from '@/app/providers';
+import { TagPicker } from '@/components/organization';
+import { useProjectService, useWorkspaceContext } from '@/app/providers';
 import { Project } from '@/domain/entities';
+import { EntityId } from '@/types';
 import { toast } from '@/stores/toast.store';
 
 export interface EditProjectDialogProps {
@@ -20,12 +22,13 @@ export const EditProjectDialog: React.FC<EditProjectDialogProps> = ({
   onProjectUpdated,
 }) => {
   const projectService = useProjectService();
+  const { workspace } = useWorkspaceContext();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [color, setColor] = useState('blue');
   const [icon, setIcon] = useState('folder');
-  const [tagInput, setTagInput] = useState('');
+  const [selectedTagIds, setSelectedTagIds] = useState<readonly EntityId[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -35,7 +38,7 @@ export const EditProjectDialog: React.FC<EditProjectDialogProps> = ({
       setDescription(project.description ?? '');
       setColor(project.color ?? 'blue');
       setIcon(project.icon ?? 'folder');
-      setTagInput(project.tags.join(', '));
+      setSelectedTagIds(project.tags ? [...project.tags] : []);
       setError(null);
     }
   }, [project, isOpen]);
@@ -61,17 +64,12 @@ export const EditProjectDialog: React.FC<EditProjectDialogProps> = ({
     setIsSubmitting(true);
 
     try {
-      const tags = tagInput
-        .split(',')
-        .map((t) => t.trim().replace(/^#/, ''))
-        .filter(Boolean);
-
       const updated = await projectService.updateProject(project.id, {
         name: trimmedName,
         description: description.trim() || undefined,
         color,
         icon,
-        tags,
+        tags: selectedTagIds,
       });
 
       toast.success(`Project "${updated.name}" updated successfully.`, 'Project Updated');
@@ -158,13 +156,15 @@ export const EditProjectDialog: React.FC<EditProjectDialogProps> = ({
         </div>
 
         {/* Tags */}
-        <Input
-          id="edit-project-tags"
-          label="Tags (Comma separated)"
-          placeholder="frontend, backend, architecture, sprint"
-          value={tagInput}
-          onChange={(e) => setTagInput(e.target.value)}
-        />
+        {workspace && (
+          <TagPicker
+            workspaceId={workspace.id}
+            selectedTagIds={selectedTagIds}
+            onChange={setSelectedTagIds}
+            label="Tags"
+            placeholder="Assign or create tags..."
+          />
+        )}
 
         <DialogFooter style={{ marginTop: '0.5rem' }}>
           <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>

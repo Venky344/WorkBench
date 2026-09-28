@@ -461,21 +461,56 @@ export class TagStorageRepository extends StorageRepository<Tag> implements ITag
     super(storage, STORES.TAGS, 'Tag');
   }
 
-  async findByNormalizedName(normalizedName: string): Promise<Tag | null> {
+  async findByWorkspaceId(workspaceId: EntityId): Promise<readonly Tag[]> {
+    const results = await this.storage.find<Tag>(this.storeName, {
+      indexName: 'by_workspaceId',
+      indexValue: workspaceId,
+    });
+    return [...results].sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  async findByNormalizedName(
+    workspaceIdOrNormalizedName: EntityId,
+    normalizedName?: string,
+  ): Promise<Tag | null> {
+    const targetNormalized = normalizedName ?? workspaceIdOrNormalizedName;
+    const targetWorkspaceId = normalizedName ? workspaceIdOrNormalizedName : undefined;
+
     const results = await this.storage.find<Tag>(this.storeName, {
       indexName: 'by_normalizedName',
-      indexValue: normalizedName,
-      limit: 1,
+      indexValue: targetNormalized,
     });
+    if (targetWorkspaceId) {
+      return results.find((t) => t.workspaceId === targetWorkspaceId) ?? null;
+    }
     return results[0] ?? null;
   }
 
-  async searchByName(query: string): Promise<readonly Tag[]> {
-    const normalized = query.toLowerCase().trim().replace(/^#/, '');
-    return this.storage.find<Tag>(this.storeName, {
+  async existsByName(
+    workspaceId: EntityId,
+    normalizedName: string,
+    excludeId?: EntityId,
+  ): Promise<boolean> {
+    const results = await this.storage.find<Tag>(this.storeName, {
       predicate: (t) =>
-        t.normalizedName.includes(normalized) || t.name.toLowerCase().includes(normalized),
+        t.workspaceId === workspaceId &&
+        t.normalizedName === normalizedName &&
+        (!excludeId || t.id !== excludeId),
     });
+    return results.length > 0;
+  }
+
+  async searchByName(workspaceIdOrQuery: EntityId, query?: string): Promise<readonly Tag[]> {
+    const targetQuery = query ?? workspaceIdOrQuery;
+    const targetWorkspaceId = query ? workspaceIdOrQuery : undefined;
+    const normalized = targetQuery.toLowerCase().trim().replace(/^#/, '');
+
+    const results = await this.storage.find<Tag>(this.storeName, {
+      predicate: (t) =>
+        (!targetWorkspaceId || t.workspaceId === targetWorkspaceId) &&
+        (t.normalizedName.includes(normalized) || t.name.toLowerCase().includes(normalized)),
+    });
+    return [...results].sort((a, b) => a.name.localeCompare(b.name));
   }
 }
 

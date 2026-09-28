@@ -19,6 +19,7 @@ export type SortDirection = 'asc' | 'desc';
 export interface ListChatsOptions {
   readonly status?: ChatStatusFilter;
   readonly groupId?: EntityId | null;
+  readonly tagId?: string;
   readonly search?: string;
   readonly sortBy?: ChatSortBy;
   readonly sortDirection?: SortDirection;
@@ -148,6 +149,11 @@ export class ChatService extends BaseService {
       } else {
         chats = chats.filter((c) => c.chatGroupId === groupId);
       }
+    }
+
+    // Filter by tag if specified
+    if (options.tagId) {
+      chats = chats.filter((c) => c.tags && c.tags.includes(options.tagId!));
     }
 
     // Basic metadata search (title / description)

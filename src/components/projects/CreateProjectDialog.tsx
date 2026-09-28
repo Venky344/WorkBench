@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Dialog, DialogFooter, Button, Input, Textarea } from '@/components/ui';
 import { ProjectColorPicker } from './ProjectColorPicker';
 import { ProjectIconPicker } from './ProjectIconPicker';
+import { TagPicker } from '@/components/organization';
 import { useProjectService, useWorkspaceContext } from '@/app/providers';
 import { Project } from '@/domain/entities';
+import { EntityId } from '@/types';
 import { toast } from '@/stores/toast.store';
 
 export interface CreateProjectDialogProps {
@@ -24,7 +26,7 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({
   const [description, setDescription] = useState('');
   const [color, setColor] = useState('blue');
   const [icon, setIcon] = useState('folder');
-  const [tagInput, setTagInput] = useState('');
+  const [selectedTagIds, setSelectedTagIds] = useState<readonly EntityId[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -33,7 +35,7 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({
     setDescription('');
     setColor('blue');
     setIcon('folder');
-    setTagInput('');
+    setSelectedTagIds([]);
     setError(null);
     setIsSubmitting(false);
   };
@@ -65,18 +67,13 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({
     setIsSubmitting(true);
 
     try {
-      const tags = tagInput
-        .split(',')
-        .map((t) => t.trim().replace(/^#/, ''))
-        .filter(Boolean);
-
       const created = await projectService.createProject({
         workspaceId: workspace.id,
         name: trimmedName,
         description: description.trim() || undefined,
         color,
         icon,
-        tags,
+        tags: selectedTagIds,
       });
 
       toast.success(`Project "${created.name}" created successfully.`, 'Project Created');
@@ -164,14 +161,15 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({
         </div>
 
         {/* Tags */}
-        <Input
-          id="create-project-tags"
-          label="Tags (Comma separated, optional)"
-          placeholder="frontend, backend, architecture, sprint"
-          value={tagInput}
-          onChange={(e) => setTagInput(e.target.value)}
-          helperText="Tags help group projects across your workspace."
-        />
+        {workspace && (
+          <TagPicker
+            workspaceId={workspace.id}
+            selectedTagIds={selectedTagIds}
+            onChange={setSelectedTagIds}
+            label="Tags (Optional)"
+            placeholder="Assign or create tags for this project..."
+          />
+        )}
 
         <DialogFooter style={{ marginTop: '0.5rem' }}>
           <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>

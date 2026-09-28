@@ -6,6 +6,7 @@ import { WorkspaceService } from '@/services/workspace.service';
 import { StorageService } from '@/services/storage.service';
 import { ChatService } from '@/services/chat.service';
 import { ChatGroupService } from '@/services/chat-group.service';
+import { TagService } from '@/services/tag.service';
 import { Workspace, User } from '@/domain/entities';
 
 export interface WorkspaceContextValue {
@@ -38,6 +39,10 @@ export const useChatService = (): ChatService => {
 
 export const useChatGroupService = (): ChatGroupService => {
   return useServices().chatGroupService;
+};
+
+export const useTagService = (): TagService => {
+  return useServices().tagService;
 };
 
 export const useWorkspaceService = (): WorkspaceService => {

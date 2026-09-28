@@ -9,12 +9,15 @@ import {
   Badge,
   Separator,
 } from '@/components/ui';
+import { TagManager } from '@/components/organization';
+import { useWorkspaceContext } from '@/app/providers';
 import { useThemeStore } from '@/stores/theme.store';
 import { appConfig } from '@/app/config/app.config';
-import { Moon, Sun, Laptop, ShieldCheck, HardDrive, Info } from 'lucide-react';
+import { Moon, Sun, Laptop, ShieldCheck, HardDrive, Info, Tag as TagIcon } from 'lucide-react';
 
 export const SettingsPage: React.FC = () => {
   const { theme, resolvedTheme, setTheme } = useThemeStore();
+  const { workspace } = useWorkspaceContext();
 
   return (
     <div
@@ -87,7 +90,28 @@ export const SettingsPage: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* 2. Storage & Privacy Boundaries */}
+      {/* 2. Workspace Tags & Organization */}
+      {workspace && (
+        <Card variant="default">
+          <CardHeader>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <TagIcon size={18} color="var(--wb-color-primary)" />
+              <CardTitle style={{ fontSize: 'var(--wb-text-lg)' }}>
+                Workspace Tags & Metadata
+              </CardTitle>
+            </div>
+            <CardDescription>
+              Create, rename, color-code, and manage canonical tags across all projects and
+              conversations in &quot;{workspace.name}&quot;.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <TagManager workspaceId={workspace.id} />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* 3. Storage & Privacy Boundaries */}
       <Card variant="default">
         <CardHeader>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

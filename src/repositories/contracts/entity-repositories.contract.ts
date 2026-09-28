@@ -121,8 +121,17 @@ export interface IDecisionRepository extends IRepository<Decision> {
 }
 
 export interface ITagRepository extends IRepository<Tag> {
-  findByNormalizedName(normalizedName: string): Promise<Tag | null>;
-  searchByName(query: string): Promise<readonly Tag[]>;
+  findByWorkspaceId(workspaceId: EntityId): Promise<readonly Tag[]>;
+  findByNormalizedName(
+    workspaceIdOrNormalizedName: EntityId,
+    normalizedName?: string,
+  ): Promise<Tag | null>;
+  existsByName(
+    workspaceId: EntityId,
+    normalizedName: string,
+    excludeId?: EntityId,
+  ): Promise<boolean>;
+  searchByName(workspaceIdOrQuery: EntityId, query?: string): Promise<readonly Tag[]>;
 }
 
 export interface ISourceRepository extends IRepository<Source> {

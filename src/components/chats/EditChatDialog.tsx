@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogFooter, Button, Input, Textarea, Select } from '@/components/ui';
-import { useChatService } from '@/app/providers';
+import { TagPicker } from '@/components/organization';
+import { useChatService, useWorkspaceContext } from '@/app/providers';
 import { Chat, ChatGroup } from '@/domain/entities';
 import { EntityId } from '@/types';
 import { toast } from '@/stores/toast.store';
@@ -21,11 +22,12 @@ export const EditChatDialog: React.FC<EditChatDialogProps> = ({
   onChatUpdated,
 }) => {
   const chatService = useChatService();
+  const { workspace } = useWorkspaceContext();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [groupId, setGroupId] = useState<string>('');
-  const [tagInput, setTagInput] = useState('');
+  const [selectedTagIds, setSelectedTagIds] = useState<readonly EntityId[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -34,7 +36,7 @@ export const EditChatDialog: React.FC<EditChatDialogProps> = ({
       setTitle(chat.title);
       setDescription(chat.description ?? '');
       setGroupId(chat.chatGroupId ?? '');
-      setTagInput(chat.tags ? chat.tags.join(', ') : '');
+      setSelectedTagIds(chat.tags ?? []);
       setError(null);
     }
   }, [chat, isOpen]);
@@ -60,16 +62,11 @@ export const EditChatDialog: React.FC<EditChatDialogProps> = ({
     setIsSubmitting(true);
 
     try {
-      const tags = tagInput
-        .split(',')
-        .map((t) => t.trim().replace(/^#/, ''))
-        .filter(Boolean);
-
       const updated = await chatService.updateChat(chat.id, {
         title: trimmedTitle,
         description: description.trim() || undefined,
         chatGroupId: groupId ? (groupId as EntityId) : null,
-        tags,
+        tags: selectedTagIds,
       });
 
       toast.success(`Conversation "${updated.title}" updated.`, 'Chat Updated');
@@ -135,13 +132,15 @@ export const EditChatDialog: React.FC<EditChatDialogProps> = ({
         />
 
         {/* Tags */}
-        <Input
-          id="edit-chat-tags"
-          label="Tags (Comma separated)"
-          placeholder="architecture, auth, sprint-1"
-          value={tagInput}
-          onChange={(e) => setTagInput(e.target.value)}
-        />
+        {workspace && (
+          <TagPicker
+            workspaceId={workspace.id}
+            selectedTagIds={selectedTagIds}
+            onChange={setSelectedTagIds}
+            label="Tags (Optional)"
+            placeholder="Assign or create tags for this conversation..."
+          />
+        )}
 
         <DialogFooter style={{ marginTop: '0.5rem' }}>
           <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>
