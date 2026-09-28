@@ -44,6 +44,8 @@ export interface IProjectRepository extends IRepository<Project> {
   findByWorkspaceId(workspaceId: EntityId): Promise<readonly Project[]>;
   findActive(workspaceId: EntityId): Promise<readonly Project[]>;
   findArchived(workspaceId: EntityId): Promise<readonly Project[]>;
+  findPinned(workspaceId: EntityId): Promise<readonly Project[]>;
+  existsByName(workspaceId: EntityId, name: string, excludeId?: EntityId): Promise<boolean>;
 }
 
 export interface IChatRepository extends IRepository<Chat> {

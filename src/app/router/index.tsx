@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { AppShell } from '@/components/layout/AppShell';
 import { HomePage } from '@/pages/HomePage';
 import { ProjectsPage } from '@/pages/ProjectsPage';
+import { ProjectDetailPage } from '@/pages/ProjectDetailPage';
 import { ChatsPage } from '@/pages/ChatsPage';
 import { InboxPage } from '@/pages/InboxPage';
 import { TasksPage } from '@/pages/TasksPage';
@@ -25,6 +26,10 @@ export const router = createBrowserRouter(
         {
           path: 'projects',
           element: <ProjectsPage />,
+        },
+        {
+          path: 'projects/:projectId',
+          element: <ProjectDetailPage />,
         },
         {
           path: 'chats',

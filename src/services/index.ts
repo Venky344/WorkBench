@@ -8,3 +8,4 @@ export * from './decision.service';
 export * from './relationship.service';
 export * from './source.service';
 export * from './inbox.service';
+export * from './container';

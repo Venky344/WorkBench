@@ -31,23 +31,17 @@ const PRIMARY_NAV_ITEMS: NavItemConfig[] = [
     to: '/projects',
     label: 'Projects',
     icon: <FolderKanban size={18} />,
-    badge: '3',
-    badgeVariant: 'neutral',
   },
   {
     to: '/chats',
     label: 'Conversations',
     icon: <MessageSquareQuote size={18} />,
-    badge: '12',
-    badgeVariant: 'neutral',
   },
-  { to: '/inbox', label: 'Inbox', icon: <Inbox size={18} />, badge: '5', badgeVariant: 'warning' },
+  { to: '/inbox', label: 'Inbox', icon: <Inbox size={18} /> },
   {
     to: '/tasks',
     label: 'Tasks',
     icon: <CheckSquare size={18} />,
-    badge: '8',
-    badgeVariant: 'neutral',
   },
   { to: '/decisions', label: 'Decisions', icon: <GitCommit size={18} /> },
   { to: '/resources', label: 'Resources', icon: <BookMarked size={18} /> },
@@ -207,7 +201,7 @@ export const AppSidebar: React.FC = () => {
       >
         {PRIMARY_NAV_ITEMS.map(renderNavLink)}
 
-        {/* Favorites Section (Structural Placeholder) */}
+        {/* Favorites Section */}
         {!isSidebarCollapsed && (
           <div
             style={{
@@ -231,43 +225,23 @@ export const AppSidebar: React.FC = () => {
               }}
             >
               <Star size={12} />
-              <span>Favorites</span>
+              <span>Pinned Projects</span>
             </div>
 
-            <NavLink
-              to="/projects"
+            <span
               style={{
                 padding: '0.375rem 0.5rem',
                 fontSize: 'var(--wb-text-xs)',
-                color: 'var(--wb-color-fg-muted)',
-                textDecoration: 'none',
-                borderRadius: 'var(--wb-radius-sm)',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
+                color: 'var(--wb-color-fg-subtle)',
+                fontStyle: 'italic',
               }}
             >
-              • CricAuction Architecture
-            </NavLink>
-            <NavLink
-              to="/projects"
-              style={{
-                padding: '0.375rem 0.5rem',
-                fontSize: 'var(--wb-text-xs)',
-                color: 'var(--wb-color-fg-muted)',
-                textDecoration: 'none',
-                borderRadius: 'var(--wb-radius-sm)',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              • Deep Research Sprint
-            </NavLink>
+              Pin projects to access them here
+            </span>
           </div>
         )}
 
-        {/* Recent Section (Structural Placeholder) */}
+        {/* Recent Section */}
         {!isSidebarCollapsed && (
           <div
             style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}
@@ -297,7 +271,7 @@ export const AppSidebar: React.FC = () => {
                 fontStyle: 'italic',
               }}
             >
-              WebSocket Protocol Decided
+              No recent activity
             </span>
           </div>
         )}

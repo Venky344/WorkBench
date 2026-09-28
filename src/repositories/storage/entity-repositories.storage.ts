@@ -118,6 +118,23 @@ export class ProjectStorageRepository
       predicate: (p) => p.workspaceId === workspaceId && p.isArchived,
     });
   }
+
+  async findPinned(workspaceId: EntityId): Promise<readonly Project[]> {
+    return this.storage.find<Project>(this.storeName, {
+      predicate: (p) => p.workspaceId === workspaceId && p.isPinned && !p.isArchived,
+    });
+  }
+
+  async existsByName(workspaceId: EntityId, name: string, excludeId?: EntityId): Promise<boolean> {
+    const trimmed = name.trim().toLowerCase();
+    const results = await this.storage.find<Project>(this.storeName, {
+      predicate: (p) =>
+        p.workspaceId === workspaceId &&
+        p.name.trim().toLowerCase() === trimmed &&
+        (!excludeId || p.id !== excludeId),
+    });
+    return results.length > 0;
+  }
 }
 
 export class ChatStorageRepository extends StorageRepository<Chat> implements IChatRepository {
