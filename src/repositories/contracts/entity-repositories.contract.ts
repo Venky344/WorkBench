@@ -147,6 +147,7 @@ export interface ISourceRepository extends IRepository<Source> {
 }
 
 export interface IRelationshipRepository extends IRepository<Relationship> {
+  findByWorkspaceId(workspaceId: EntityId): Promise<readonly Relationship[]>;
   findBySourceEntity(
     sourceEntityType: EntityType,
     sourceEntityId: EntityId,
@@ -155,11 +156,13 @@ export interface IRelationshipRepository extends IRepository<Relationship> {
     targetEntityType: EntityType,
     targetEntityId: EntityId,
   ): Promise<readonly Relationship[]>;
+  findByEntity(entityType: EntityType, entityId: EntityId): Promise<readonly Relationship[]>;
   findRelationships(
     sourceEntityId: EntityId,
     relationshipType: RelationshipType,
     targetEntityId?: EntityId,
   ): Promise<readonly Relationship[]>;
+  deleteByEntity(entityType: EntityType, entityId: EntityId): Promise<number>;
 }
 
 export interface IActivityEventRepository extends IRepository<ActivityEvent> {

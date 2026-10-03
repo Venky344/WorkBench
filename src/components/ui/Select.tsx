@@ -9,7 +9,7 @@ export interface SelectOption {
 
 export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
-  options: SelectOption[];
+  options?: SelectOption[];
   helperText?: string;
   errorMessage?: string;
   placeholder?: string;
@@ -28,6 +28,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       id: customId,
       className = '',
       style,
+      children,
       ...props
     },
     ref,
@@ -88,11 +89,13 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
                 {placeholder}
               </option>
             )}
-            {options.map((opt) => (
-              <option key={opt.value} value={opt.value} disabled={opt.disabled}>
-                {opt.label}
-              </option>
-            ))}
+            {options
+              ? options.map((opt) => (
+                  <option key={opt.value} value={opt.value} disabled={opt.disabled}>
+                    {opt.label}
+                  </option>
+                ))
+              : children}
           </select>
 
           <ChevronDown

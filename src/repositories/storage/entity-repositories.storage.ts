@@ -594,6 +594,13 @@ export class RelationshipStorageRepository
     super(storage, STORES.RELATIONSHIPS, 'Relationship');
   }
 
+  async findByWorkspaceId(workspaceId: EntityId): Promise<readonly Relationship[]> {
+    return this.storage.find<Relationship>(this.storeName, {
+      indexName: 'by_workspaceId',
+      indexValue: workspaceId,
+    });
+  }
+
   async findBySourceEntity(
     sourceEntityType: EntityType,
     sourceEntityId: EntityId,
@@ -614,6 +621,14 @@ export class RelationshipStorageRepository
     });
   }
 
+  async findByEntity(entityType: EntityType, entityId: EntityId): Promise<readonly Relationship[]> {
+    return this.storage.find<Relationship>(this.storeName, {
+      predicate: (r) =>
+        (r.sourceEntityType === entityType && r.sourceEntityId === entityId) ||
+        (r.targetEntityType === entityType && r.targetEntityId === entityId),
+    });
+  }
+
   async findRelationships(
     sourceEntityId: EntityId,
     relationshipType: RelationshipType,
@@ -625,6 +640,12 @@ export class RelationshipStorageRepository
         r.relationshipType === relationshipType &&
         (!targetEntityId || r.targetEntityId === targetEntityId),
     });
+  }
+
+  async deleteByEntity(entityType: EntityType, entityId: EntityId): Promise<number> {
+    const related = await this.findByEntity(entityType, entityId);
+    if (related.length === 0) return 0;
+    return this.deleteBatch(related.map((r) => r.id));
   }
 }
 

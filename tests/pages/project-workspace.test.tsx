@@ -74,6 +74,7 @@ describe('Project Workspace Experience', () => {
 
     // Verify Navigation Tabs
     expect(screen.getByRole('tab', { name: /Overview/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Brain/i })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Chats/i })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Files/i })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Notes/i })).toBeInTheDocument();

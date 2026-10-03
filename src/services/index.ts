@@ -8,6 +8,8 @@ export * from './tag.service';
 export * from './task.service';
 export * from './decision.service';
 export * from './relationship.service';
+export * from './relationship.engine';
+export * from './brain.service';
 export * from './source.service';
 export * from './inbox.service';
 export * from './file.service';

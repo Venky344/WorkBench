@@ -12,6 +12,7 @@ import {
   FileText,
   StickyNote,
   CheckSquare,
+  Network,
   GitCommit,
   BookMarked,
   Activity,
@@ -22,6 +23,13 @@ export const ProjectOverviewPage: React.FC = () => {
   const { project, onProjectUpdated } = useOutletContext<ProjectWorkspaceContextValue>();
 
   const modules = [
+    {
+      title: 'Workspace Brain & Connections',
+      description: 'Deterministic relationship graph, explicit links, and connected context.',
+      icon: <Network size={18} />,
+      to: `/projects/${project.id}/brain`,
+      phaseBadge: 'Phase 11',
+    },
     {
       title: 'Conversations & Chats',
       description: 'Project conversations, chat groups, and chat history.',

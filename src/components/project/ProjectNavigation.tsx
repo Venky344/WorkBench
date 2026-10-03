@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 import {
   LayoutDashboard,
+  Network,
   MessageSquare,
   FileText,
   StickyNote,
@@ -32,6 +33,12 @@ export const ProjectNavigation: React.FC = () => {
       path: `/projects/${projectId}`,
       icon: <LayoutDashboard size={15} />,
       end: true,
+    },
+    {
+      id: 'brain',
+      label: 'Brain',
+      path: `/projects/${projectId}/brain`,
+      icon: <Network size={15} />,
     },
     {
       id: 'chats',

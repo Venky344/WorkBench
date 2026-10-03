@@ -8,6 +8,7 @@ import { TagService } from './tag.service';
 import { TaskService } from './task.service';
 import { DecisionService } from './decision.service';
 import { RelationshipService } from './relationship.service';
+import { BrainService } from './brain.service';
 import { SourceService } from './source.service';
 import { InboxService } from './inbox.service';
 import { FileService } from './file.service';
@@ -28,6 +29,7 @@ export interface ServiceContainer {
   readonly taskService: TaskService;
   readonly decisionService: DecisionService;
   readonly relationshipService: RelationshipService;
+  readonly brainService: BrainService;
   readonly sourceService: SourceService;
   readonly inboxService: InboxService;
   readonly fileService: FileService;
@@ -75,6 +77,21 @@ export function createServiceContainer(storageEngine?: IStorageEngine): ServiceC
   const taskService = new TaskService(storageService.tasks);
   const decisionService = new DecisionService(storageService.decisions);
   const relationshipService = new RelationshipService(storageService.relationships);
+  const brainService = new BrainService({
+    projectRepo: storageService.projects,
+    chatRepo: storageService.chats,
+    chatGroupRepo: storageService.chatGroups,
+    fileRepo: storageService.files,
+    noteRepo: storageService.notes,
+    linkRepo: storageService.links,
+    bookmarkRepo: storageService.bookmarks,
+    referenceRepo: storageService.references,
+    codeSnippetRepo: storageService.codeSnippets,
+    taskRepo: storageService.tasks,
+    decisionRepo: storageService.decisions,
+    tagRepo: storageService.tags,
+    relationshipRepo: storageService.relationships,
+  });
   const sourceService = new SourceService(storageService.sources);
   const inboxService = new InboxService(storageService.inboxItems);
 
@@ -90,6 +107,7 @@ export function createServiceContainer(storageEngine?: IStorageEngine): ServiceC
     taskService,
     decisionService,
     relationshipService,
+    brainService,
     sourceService,
     inboxService,
     fileService,

@@ -5,6 +5,7 @@ import { ProjectsPage } from '@/pages/ProjectsPage';
 import {
   ProjectWorkspacePage,
   ProjectOverviewPage,
+  ProjectBrainPage,
   ProjectChatsPage,
   ChatDetailPage,
   ProjectFilesPage,
@@ -47,6 +48,10 @@ export const router = createBrowserRouter(
             {
               index: true,
               element: <ProjectOverviewPage />,
+            },
+            {
+              path: 'brain',
+              element: <ProjectBrainPage />,
             },
             {
               path: 'chats',

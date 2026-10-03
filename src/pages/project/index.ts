@@ -1,5 +1,6 @@
 export * from './ProjectWorkspacePage';
 export * from './ProjectOverviewPage';
+export * from './ProjectBrainPage';
 export * from './ProjectChatsPage';
 export * from './ChatDetailPage';
 export * from './ProjectFilesPage';

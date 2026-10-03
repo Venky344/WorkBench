@@ -15,6 +15,8 @@ import { ReferenceService } from '@/services/reference.service';
 import { CodeSnippetService } from '@/services/code-snippet.service';
 import { TaskService } from '@/services/task.service';
 import { DecisionService } from '@/services/decision.service';
+import { RelationshipService } from '@/services/relationship.service';
+import { BrainService } from '@/services/brain.service';
 import { Workspace, User } from '@/domain/entities';
 
 export interface WorkspaceContextValue {
@@ -91,6 +93,14 @@ export const useTaskService = (): TaskService => {
 
 export const useDecisionService = (): DecisionService => {
   return useServices().decisionService;
+};
+
+export const useRelationshipService = (): RelationshipService => {
+  return useServices().relationshipService;
+};
+
+export const useBrainService = (): BrainService => {
+  return useServices().brainService;
 };
 
 export const useWorkspaceContext = (): WorkspaceContextValue => {
