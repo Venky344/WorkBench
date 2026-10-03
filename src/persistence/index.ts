@@ -4,3 +4,4 @@ export * from './migrations';
 export * from './serializers';
 export * from './indexeddb';
 export * from './memory';
+export * from './file-storage';

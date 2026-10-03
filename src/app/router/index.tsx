@@ -9,6 +9,7 @@ import {
   ChatDetailPage,
   ProjectFilesPage,
   ProjectNotesPage,
+  ProjectNoteDetailPage,
   ProjectTasksPage,
   ProjectDecisionsPage,
   ProjectResourcesPage,
@@ -62,6 +63,10 @@ export const router = createBrowserRouter(
             {
               path: 'notes',
               element: <ProjectNotesPage />,
+            },
+            {
+              path: 'notes/:noteId',
+              element: <ProjectNoteDetailPage />,
             },
             {
               path: 'tasks',

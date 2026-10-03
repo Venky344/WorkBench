@@ -122,10 +122,8 @@ describe('Project Workspace Experience', () => {
     await user.click(filesTab);
 
     await waitFor(() => {
-      expect(screen.getByText('Project Files & Documents')).toBeInTheDocument();
-      expect(
-        screen.getByText(/File management and attachment storage will be implemented in Phase 9/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Project Files')).toBeInTheDocument();
+      expect(screen.getByText('No files yet')).toBeInTheDocument();
     });
 
     // 3. Navigate to Tasks tab

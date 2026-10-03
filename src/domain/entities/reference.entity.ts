@@ -15,4 +15,5 @@ export interface Reference extends BaseEntity {
   readonly title: string;
   readonly targetUri: string;
   readonly annotation?: string;
+  readonly tags?: readonly string[];
 }

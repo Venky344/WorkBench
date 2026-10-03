@@ -7,6 +7,12 @@ import { StorageService } from '@/services/storage.service';
 import { ChatService } from '@/services/chat.service';
 import { ChatGroupService } from '@/services/chat-group.service';
 import { TagService } from '@/services/tag.service';
+import { FileService } from '@/services/file.service';
+import { NoteService } from '@/services/note.service';
+import { LinkService } from '@/services/link.service';
+import { BookmarkService } from '@/services/bookmark.service';
+import { ReferenceService } from '@/services/reference.service';
+import { CodeSnippetService } from '@/services/code-snippet.service';
 import { Workspace, User } from '@/domain/entities';
 
 export interface WorkspaceContextValue {
@@ -51,6 +57,30 @@ export const useWorkspaceService = (): WorkspaceService => {
 
 export const useStorageService = (): StorageService => {
   return useServices().storageService;
+};
+
+export const useFileService = (): FileService => {
+  return useServices().fileService;
+};
+
+export const useNoteService = (): NoteService => {
+  return useServices().noteService;
+};
+
+export const useLinkService = (): LinkService => {
+  return useServices().linkService;
+};
+
+export const useBookmarkService = (): BookmarkService => {
+  return useServices().bookmarkService;
+};
+
+export const useReferenceService = (): ReferenceService => {
+  return useServices().referenceService;
+};
+
+export const useCodeSnippetService = (): CodeSnippetService => {
+  return useServices().codeSnippetService;
 };
 
 export const useWorkspaceContext = (): WorkspaceContextValue => {

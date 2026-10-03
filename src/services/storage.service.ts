@@ -1,6 +1,8 @@
 import { BaseService } from './base.service';
 import { IStorageEngine } from '@/persistence/storage.interface';
 import { IndexedDbStorageEngine } from '@/persistence/indexeddb/indexeddb.storage-engine';
+import { MemoryStorageEngine } from '@/persistence/memory/memory.storage-engine';
+import { IFileStorage, IndexedDbFileStorage, MemoryFileStorage } from '@/persistence/file-storage';
 import {
   WorkspaceStorageRepository,
   UserStorageRepository,
@@ -52,6 +54,7 @@ export class StorageService extends BaseService {
   private readonly storage: IStorageEngine;
   private isInitialized = false;
 
+  readonly fileStorage: IFileStorage;
   readonly workspaces: IWorkspaceRepository;
   readonly users: IUserRepository;
   readonly projects: IProjectRepository;
@@ -74,9 +77,17 @@ export class StorageService extends BaseService {
   readonly automations: IAutomationRepository;
   readonly projectTemplates: IProjectTemplateRepository;
 
-  constructor(storageEngine?: IStorageEngine) {
+  constructor(storageEngine?: IStorageEngine, fileStorage?: IFileStorage) {
     super('StorageService');
     this.storage = storageEngine ?? new IndexedDbStorageEngine();
+
+    if (fileStorage) {
+      this.fileStorage = fileStorage;
+    } else if (this.storage instanceof MemoryStorageEngine) {
+      this.fileStorage = new MemoryFileStorage();
+    } else {
+      this.fileStorage = new IndexedDbFileStorage();
+    }
 
     this.workspaces = new WorkspaceStorageRepository(this.storage);
     this.users = new UserStorageRepository(this.storage);
@@ -108,7 +119,7 @@ export class StorageService extends BaseService {
 
     try {
       this.log.info('Initializing persistence engine...');
-      await this.storage.open();
+      await Promise.all([this.storage.open(), this.fileStorage.open()]);
       this.isInitialized = true;
       this.log.info('Persistence engine initialized successfully');
     } catch (error) {
@@ -119,7 +130,7 @@ export class StorageService extends BaseService {
 
   async close(): Promise<void> {
     if (this.isInitialized) {
-      await this.storage.close();
+      await Promise.all([this.storage.close(), this.fileStorage.close()]);
       this.isInitialized = false;
       this.log.info('Persistence engine closed');
     }

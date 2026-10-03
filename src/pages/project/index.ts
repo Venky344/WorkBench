@@ -4,6 +4,7 @@ export * from './ProjectChatsPage';
 export * from './ChatDetailPage';
 export * from './ProjectFilesPage';
 export * from './ProjectNotesPage';
+export * from './ProjectNoteDetailPage';
 export * from './ProjectTasksPage';
 export * from './ProjectDecisionsPage';
 export * from './ProjectResourcesPage';

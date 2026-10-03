@@ -14,6 +14,7 @@ export interface FileEntity extends BaseEntity {
   readonly mimeType: string;
   readonly sizeBytes: number;
   readonly pathOrReference: string;
+  readonly description?: string;
   readonly sourceId?: EntityId;
   readonly provenance?: ProvenanceRecord;
   readonly tags: readonly string[];

@@ -3,6 +3,12 @@ import {
   ITagRepository,
   IProjectRepository,
   IChatRepository,
+  IFileRepository,
+  INoteRepository,
+  ILinkRepository,
+  IBookmarkRepository,
+  IReferenceRepository,
+  ICodeSnippetRepository,
 } from '@/repositories/contracts/entity-repositories.contract';
 import { Tag, Project, Chat } from '@/domain/entities';
 import { generateEntityId } from '@/domain/value-objects/id';
@@ -14,6 +20,12 @@ import { NotFoundError, ValidationError, ConflictError } from '@/utils/errors';
 export interface TagUsageCount {
   readonly projectCount: number;
   readonly chatCount: number;
+  readonly fileCount?: number;
+  readonly noteCount?: number;
+  readonly linkCount?: number;
+  readonly bookmarkCount?: number;
+  readonly referenceCount?: number;
+  readonly codeSnippetCount?: number;
   readonly totalCount: number;
 }
 
@@ -22,6 +34,12 @@ export class TagService extends BaseService {
     private readonly tagRepo: ITagRepository,
     private readonly projectRepo?: IProjectRepository,
     private readonly chatRepo?: IChatRepository,
+    private readonly fileRepo?: IFileRepository,
+    private readonly noteRepo?: INoteRepository,
+    private readonly linkRepo?: ILinkRepository,
+    private readonly bookmarkRepo?: IBookmarkRepository,
+    private readonly referenceRepo?: IReferenceRepository,
+    private readonly snippetRepo?: ICodeSnippetRepository,
   ) {
     super('TagService');
   }
@@ -183,6 +201,90 @@ export class TagService extends BaseService {
       }
     }
 
+    // Clean up file tag assignments
+    if (this.fileRepo) {
+      const files = await this.fileRepo.findByWorkspaceId(existing.workspaceId);
+      for (const file of files) {
+        if (file.tags && file.tags.includes(id)) {
+          await this.fileRepo.save({
+            ...file,
+            tags: Object.freeze(file.tags.filter((tId) => tId !== id)),
+            updatedAt: createCurrentTimestamp(),
+          });
+        }
+      }
+    }
+
+    // Clean up note tag assignments
+    if (this.noteRepo) {
+      const notes = await this.noteRepo.findByWorkspaceId(existing.workspaceId);
+      for (const note of notes) {
+        if (note.tags && note.tags.includes(id)) {
+          await this.noteRepo.save({
+            ...note,
+            tags: Object.freeze(note.tags.filter((tId) => tId !== id)),
+            updatedAt: createCurrentTimestamp(),
+          });
+        }
+      }
+    }
+
+    // Clean up link tag assignments
+    if (this.linkRepo) {
+      const links = await this.linkRepo.findByWorkspaceId(existing.workspaceId);
+      for (const link of links) {
+        if (link.tags && link.tags.includes(id)) {
+          await this.linkRepo.save({
+            ...link,
+            tags: Object.freeze(link.tags.filter((tId) => tId !== id)),
+            updatedAt: createCurrentTimestamp(),
+          });
+        }
+      }
+    }
+
+    // Clean up bookmark tag assignments
+    if (this.bookmarkRepo) {
+      const bookmarks = await this.bookmarkRepo.findByWorkspaceId(existing.workspaceId);
+      for (const bookmark of bookmarks) {
+        if (bookmark.tags && bookmark.tags.includes(id)) {
+          await this.bookmarkRepo.save({
+            ...bookmark,
+            tags: Object.freeze(bookmark.tags.filter((tId) => tId !== id)),
+            updatedAt: createCurrentTimestamp(),
+          });
+        }
+      }
+    }
+
+    // Clean up reference tag assignments
+    if (this.referenceRepo) {
+      const refs = await this.referenceRepo.findByWorkspaceId(existing.workspaceId);
+      for (const ref of refs) {
+        if (ref.tags && ref.tags.includes(id)) {
+          await this.referenceRepo.save({
+            ...ref,
+            tags: Object.freeze(ref.tags.filter((tId) => tId !== id)),
+            updatedAt: createCurrentTimestamp(),
+          });
+        }
+      }
+    }
+
+    // Clean up snippet tag assignments
+    if (this.snippetRepo) {
+      const snippets = await this.snippetRepo.findByWorkspaceId(existing.workspaceId);
+      for (const snippet of snippets) {
+        if (snippet.tags && snippet.tags.includes(id)) {
+          await this.snippetRepo.save({
+            ...snippet,
+            tags: Object.freeze(snippet.tags.filter((tId) => tId !== id)),
+            updatedAt: createCurrentTimestamp(),
+          });
+        }
+      }
+    }
+
     const deleted = await this.tagRepo.delete(id);
     this.log.info(`Tag deleted: ${existing.name} (${existing.id}) and cleaned from assignments`);
     return deleted;
@@ -191,6 +293,12 @@ export class TagService extends BaseService {
   async getTagUsageCount(workspaceId: EntityId, tagId: EntityId): Promise<TagUsageCount> {
     let projectCount = 0;
     let chatCount = 0;
+    let fileCount = 0;
+    let noteCount = 0;
+    let linkCount = 0;
+    let bookmarkCount = 0;
+    let referenceCount = 0;
+    let codeSnippetCount = 0;
 
     if (this.projectRepo) {
       const projects = await this.projectRepo.findByWorkspaceId(workspaceId);
@@ -202,10 +310,54 @@ export class TagService extends BaseService {
       chatCount = chats.filter((c) => c.tags && c.tags.includes(tagId)).length;
     }
 
+    if (this.fileRepo) {
+      const files = await this.fileRepo.findByWorkspaceId(workspaceId);
+      fileCount = files.filter((f) => f.tags && f.tags.includes(tagId)).length;
+    }
+
+    if (this.noteRepo) {
+      const notes = await this.noteRepo.findByWorkspaceId(workspaceId);
+      noteCount = notes.filter((n) => n.tags && n.tags.includes(tagId)).length;
+    }
+
+    if (this.linkRepo) {
+      const links = await this.linkRepo.findByWorkspaceId(workspaceId);
+      linkCount = links.filter((l) => l.tags && l.tags.includes(tagId)).length;
+    }
+
+    if (this.bookmarkRepo) {
+      const bookmarks = await this.bookmarkRepo.findByWorkspaceId(workspaceId);
+      bookmarkCount = bookmarks.filter((b) => b.tags && b.tags.includes(tagId)).length;
+    }
+
+    if (this.referenceRepo) {
+      const refs = await this.referenceRepo.findByWorkspaceId(workspaceId);
+      referenceCount = refs.filter((r) => r.tags && r.tags.includes(tagId)).length;
+    }
+
+    if (this.snippetRepo) {
+      const snippets = await this.snippetRepo.findByWorkspaceId(workspaceId);
+      codeSnippetCount = snippets.filter((s) => s.tags && s.tags.includes(tagId)).length;
+    }
+
     return {
       projectCount,
       chatCount,
-      totalCount: projectCount + chatCount,
+      fileCount,
+      noteCount,
+      linkCount,
+      bookmarkCount,
+      referenceCount,
+      codeSnippetCount,
+      totalCount:
+        projectCount +
+        chatCount +
+        fileCount +
+        noteCount +
+        linkCount +
+        bookmarkCount +
+        referenceCount +
+        codeSnippetCount,
     };
   }
 

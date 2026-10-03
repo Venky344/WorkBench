@@ -10,6 +10,12 @@ import { DecisionService } from './decision.service';
 import { RelationshipService } from './relationship.service';
 import { SourceService } from './source.service';
 import { InboxService } from './inbox.service';
+import { FileService } from './file.service';
+import { NoteService } from './note.service';
+import { LinkService } from './link.service';
+import { BookmarkService } from './bookmark.service';
+import { ReferenceService } from './reference.service';
+import { CodeSnippetService } from './code-snippet.service';
 import { Workspace, User } from '@/domain/entities';
 
 export interface ServiceContainer {
@@ -24,6 +30,12 @@ export interface ServiceContainer {
   readonly relationshipService: RelationshipService;
   readonly sourceService: SourceService;
   readonly inboxService: InboxService;
+  readonly fileService: FileService;
+  readonly noteService: NoteService;
+  readonly linkService: LinkService;
+  readonly bookmarkService: BookmarkService;
+  readonly referenceService: ReferenceService;
+  readonly codeSnippetService: CodeSnippetService;
   initialize(): Promise<{ workspace: Workspace; user: User }>;
 }
 
@@ -41,10 +53,22 @@ export function createServiceContainer(storageEngine?: IStorageEngine): ServiceC
     storageService.chats,
     storageService.projects,
   );
+  const fileService = new FileService(storageService.files, storageService.fileStorage);
+  const noteService = new NoteService(storageService.notes);
+  const linkService = new LinkService(storageService.links);
+  const bookmarkService = new BookmarkService(storageService.bookmarks);
+  const referenceService = new ReferenceService(storageService.references);
+  const codeSnippetService = new CodeSnippetService(storageService.codeSnippets);
   const tagService = new TagService(
     storageService.tags,
     storageService.projects,
     storageService.chats,
+    storageService.files,
+    storageService.notes,
+    storageService.links,
+    storageService.bookmarks,
+    storageService.references,
+    storageService.codeSnippets,
   );
   const taskService = new TaskService(storageService.tasks);
   const decisionService = new DecisionService(storageService.decisions);
@@ -66,6 +90,12 @@ export function createServiceContainer(storageEngine?: IStorageEngine): ServiceC
     relationshipService,
     sourceService,
     inboxService,
+    fileService,
+    noteService,
+    linkService,
+    bookmarkService,
+    referenceService,
+    codeSnippetService,
     async initialize() {
       if (!initPromise) {
         initPromise = (async () => {

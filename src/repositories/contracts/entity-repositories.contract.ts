@@ -74,21 +74,25 @@ export interface IChatGroupRepository extends IRepository<ChatGroup> {
 
 export interface IFileRepository extends IRepository<FileEntity> {
   findByProjectId(projectId: EntityId): Promise<readonly FileEntity[]>;
+  findByWorkspaceId(workspaceId: EntityId): Promise<readonly FileEntity[]>;
   findBySourceId(sourceId: EntityId): Promise<readonly FileEntity[]>;
 }
 
 export interface INoteRepository extends IRepository<Note> {
   findByProjectId(projectId: EntityId): Promise<readonly Note[]>;
+  findByWorkspaceId(workspaceId: EntityId): Promise<readonly Note[]>;
   findPinned(projectId: EntityId): Promise<readonly Note[]>;
 }
 
 export interface ILinkRepository extends IRepository<Link> {
   findByProjectId(projectId: EntityId): Promise<readonly Link[]>;
+  findByWorkspaceId(workspaceId: EntityId): Promise<readonly Link[]>;
   findByDomain(domain: string): Promise<readonly Link[]>;
 }
 
 export interface IBookmarkRepository extends IRepository<Bookmark> {
   findByProjectId(projectId: EntityId): Promise<readonly Bookmark[]>;
+  findByWorkspaceId(workspaceId: EntityId): Promise<readonly Bookmark[]>;
   findByTarget(
     targetEntityType: EntityType,
     targetEntityId: EntityId,
@@ -97,6 +101,7 @@ export interface IBookmarkRepository extends IRepository<Bookmark> {
 
 export interface IReferenceRepository extends IRepository<Reference> {
   findByProjectId(projectId: EntityId): Promise<readonly Reference[]>;
+  findByWorkspaceId(workspaceId: EntityId): Promise<readonly Reference[]>;
   findBySourceEntity(
     sourceEntityType: EntityType,
     sourceEntityId: EntityId,
@@ -105,6 +110,7 @@ export interface IReferenceRepository extends IRepository<Reference> {
 
 export interface ICodeSnippetRepository extends IRepository<CodeSnippet> {
   findByProjectId(projectId: EntityId): Promise<readonly CodeSnippet[]>;
+  findByWorkspaceId(workspaceId: EntityId): Promise<readonly CodeSnippet[]>;
   findByLanguage(language: string): Promise<readonly CodeSnippet[]>;
   findByChatId(chatId: EntityId): Promise<readonly CodeSnippet[]>;
 }

@@ -1,7 +1,7 @@
 import { DatabaseSchema, StoreSchema } from './storage.interface';
 
 export const WORKBENCH_DB_NAME = 'workbench_local_db';
-export const WORKBENCH_DB_VERSION = 1;
+export const WORKBENCH_DB_VERSION = 2;
 
 export const STORES = {
   WORKSPACES: 'workspaces',
@@ -11,6 +11,7 @@ export const STORES = {
   MESSAGES: 'messages',
   CHAT_GROUPS: 'chat_groups',
   FILES: 'files',
+  FILE_BLOBS: 'file_blobs',
   NOTES: 'notes',
   LINKS: 'links',
   BOOKMARKS: 'bookmarks',
@@ -223,8 +224,20 @@ export const V1_STORES: readonly StoreSchema[] = [
   },
 ];
 
+export const V2_STORES: readonly StoreSchema[] = [
+  ...V1_STORES,
+  {
+    name: STORES.FILE_BLOBS,
+    keyPath: 'storageKey',
+    indexes: [
+      { name: 'by_createdAt', keyPath: 'createdAt' },
+      { name: 'by_mimeType', keyPath: 'mimeType' },
+    ],
+  },
+];
+
 export const CURRENT_DATABASE_SCHEMA: DatabaseSchema = {
   name: WORKBENCH_DB_NAME,
   version: WORKBENCH_DB_VERSION,
-  stores: V1_STORES,
+  stores: V2_STORES,
 };

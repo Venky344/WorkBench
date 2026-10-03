@@ -1,11 +1,12 @@
 import { Migration } from './migration.interface';
 import { v1Migration } from './v1.migration';
+import { v2Migration } from './v2.migration';
 import { DatabaseError } from '@/utils/errors';
 
 export class MigrationRunner {
   private readonly migrations: readonly Migration[];
 
-  constructor(migrations: readonly Migration[] = [v1Migration]) {
+  constructor(migrations: readonly Migration[] = [v1Migration, v2Migration]) {
     this.migrations = [...migrations].sort((a, b) => a.version - b.version);
   }
 

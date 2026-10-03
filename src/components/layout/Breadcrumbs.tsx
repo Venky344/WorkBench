@@ -31,6 +31,8 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ customSegments, classN
   const services = useOptionalServices();
   const projectService = services?.projectService;
   const chatService = services?.chatService;
+  const noteService = services?.noteService;
+  const fileService = services?.fileService;
   const [resolvedNames, setResolvedNames] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -53,6 +55,21 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ customSegments, classN
             const chat = await chatService.getChat(id);
             if (chat) {
               setResolvedNames((prev) => ({ ...prev, [id]: chat.title }));
+              return;
+            }
+          }
+          if (noteService) {
+            const note = await noteService.getNote(id);
+            if (note) {
+              setResolvedNames((prev) => ({ ...prev, [id]: note.title }));
+              return;
+            }
+          }
+          if (fileService) {
+            const file = await fileService.getFile(id);
+            if (file) {
+              setResolvedNames((prev) => ({ ...prev, [id]: file.name }));
+              return;
             }
           }
         } catch {
@@ -60,7 +77,15 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ customSegments, classN
         }
       }
     });
-  }, [location.pathname, services, projectService, chatService, resolvedNames]);
+  }, [
+    location.pathname,
+    services,
+    projectService,
+    chatService,
+    noteService,
+    fileService,
+    resolvedNames,
+  ]);
 
   const getSegments = () => {
     if (customSegments && customSegments.length > 0) {

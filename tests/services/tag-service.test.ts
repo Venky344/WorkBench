@@ -9,8 +9,15 @@ import {
   ChatStorageRepository,
   MessageStorageRepository,
   ChatGroupStorageRepository,
+  FileStorageRepository,
+  NoteStorageRepository,
+  LinkStorageRepository,
+  BookmarkStorageRepository,
+  ReferenceStorageRepository,
+  CodeSnippetStorageRepository,
 } from '@/repositories/storage/entity-repositories.storage';
 import { generateEntityId } from '@/domain/value-objects/id';
+import { createCurrentTimestamp } from '@/domain/value-objects/timestamp';
 import { ValidationError, ConflictError } from '@/utils/errors';
 
 describe('TagService & Deterministic Organization', () => {
@@ -20,6 +27,12 @@ describe('TagService & Deterministic Organization', () => {
   let chatRepo: ChatStorageRepository;
   let messageRepo: MessageStorageRepository;
   let chatGroupRepo: ChatGroupStorageRepository;
+  let fileRepo: FileStorageRepository;
+  let noteRepo: NoteStorageRepository;
+  let linkRepo: LinkStorageRepository;
+  let bookmarkRepo: BookmarkStorageRepository;
+  let referenceRepo: ReferenceStorageRepository;
+  let snippetRepo: CodeSnippetStorageRepository;
   let tagService: TagService;
   let projectService: ProjectService;
   let chatService: ChatService;
@@ -31,10 +44,26 @@ describe('TagService & Deterministic Organization', () => {
     messageRepo = new MessageStorageRepository(storage);
     chatGroupRepo = new ChatGroupStorageRepository(storage);
     chatRepo = new ChatStorageRepository(storage);
+    fileRepo = new FileStorageRepository(storage);
+    noteRepo = new NoteStorageRepository(storage);
+    linkRepo = new LinkStorageRepository(storage);
+    bookmarkRepo = new BookmarkStorageRepository(storage);
+    referenceRepo = new ReferenceStorageRepository(storage);
+    snippetRepo = new CodeSnippetStorageRepository(storage);
 
     projectService = new ProjectService(projectRepo);
     chatService = new ChatService(chatRepo, messageRepo, chatGroupRepo);
-    tagService = new TagService(tagRepo, projectRepo, chatRepo);
+    tagService = new TagService(
+      tagRepo,
+      projectRepo,
+      chatRepo,
+      fileRepo,
+      noteRepo,
+      linkRepo,
+      bookmarkRepo,
+      referenceRepo,
+      snippetRepo,
+    );
   });
 
   describe('Tag Name Normalization & Validation', () => {
@@ -278,6 +307,127 @@ describe('TagService & Deterministic Organization', () => {
       const freshChat = await chatService.getChatOrThrow(chat.id);
       expect(freshChat).not.toBeNull();
       expect(freshChat.tags).toEqual([tagToKeep.id]);
+    });
+
+    it('deleting a tag cleans up assignments across all Phase 9 resource types (Files, Notes, Links, Bookmarks, References, Snippets)', async () => {
+      const workspaceId = generateEntityId();
+      const projectId = generateEntityId();
+      const now = createCurrentTimestamp();
+
+      const tagToDelete = await tagService.createTag({ workspaceId, name: 'temp-tag' });
+      const tagToKeep = await tagService.createTag({ workspaceId, name: 'permanent-tag' });
+
+      // Create a record in each of the 6 resource stores
+      await fileRepo.save({
+        id: generateEntityId(),
+        workspaceId,
+        projectId,
+        name: 'File 1',
+        originalFilename: 'file1.txt',
+        mimeType: 'text/plain',
+        sizeBytes: 10,
+        pathOrReference: 'file_key_1',
+        tags: [tagToDelete.id, tagToKeep.id],
+        isArchived: false,
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await noteRepo.save({
+        id: generateEntityId(),
+        workspaceId,
+        projectId,
+        title: 'Note 1',
+        content: 'Content 1',
+        isPinned: false,
+        isArchived: false,
+        tags: [tagToDelete.id, tagToKeep.id],
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await linkRepo.save({
+        id: generateEntityId(),
+        workspaceId,
+        projectId,
+        url: 'https://example.com',
+        title: 'Link 1',
+        domain: 'example.com',
+        tags: [tagToDelete.id, tagToKeep.id],
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await bookmarkRepo.save({
+        id: generateEntityId(),
+        workspaceId,
+        projectId,
+        title: 'Bookmark 1',
+        targetEntityType: 'file',
+        targetEntityId: generateEntityId(),
+        order: 0,
+        tags: [tagToDelete.id, tagToKeep.id],
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await referenceRepo.save({
+        id: generateEntityId(),
+        workspaceId,
+        projectId,
+        title: 'Reference 1',
+        referenceKind: 'url',
+        targetUri: 'https://spec.org',
+        sourceEntityType: 'project',
+        sourceEntityId: projectId,
+        tags: [tagToDelete.id, tagToKeep.id],
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await snippetRepo.save({
+        id: generateEntityId(),
+        workspaceId,
+        projectId,
+        title: 'Snippet 1',
+        language: 'typescript',
+        code: 'const x = 1;',
+        tags: [tagToDelete.id, tagToKeep.id],
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      // Verify usage counts
+      const counts = await tagService.getTagUsageCount(workspaceId, tagToDelete.id);
+      expect(counts.fileCount).toBe(1);
+      expect(counts.noteCount).toBe(1);
+      expect(counts.linkCount).toBe(1);
+      expect(counts.bookmarkCount).toBe(1);
+      expect(counts.referenceCount).toBe(1);
+      expect(counts.codeSnippetCount).toBe(1);
+      expect(counts.totalCount).toBe(6);
+
+      // Delete the tag
+      await tagService.deleteTag(tagToDelete.id);
+
+      // Verify each resource still has tagToKeep but not tagToDelete
+      const [file] = await fileRepo.findByWorkspaceId(workspaceId);
+      expect(file?.tags).toEqual([tagToKeep.id]);
+
+      const [note] = await noteRepo.findByWorkspaceId(workspaceId);
+      expect(note?.tags).toEqual([tagToKeep.id]);
+
+      const [link] = await linkRepo.findByWorkspaceId(workspaceId);
+      expect(link?.tags).toEqual([tagToKeep.id]);
+
+      const [bookmark] = await bookmarkRepo.findByWorkspaceId(workspaceId);
+      expect(bookmark?.tags).toEqual([tagToKeep.id]);
+
+      const [reference] = await referenceRepo.findByWorkspaceId(workspaceId);
+      expect(reference?.tags).toEqual([tagToKeep.id]);
+
+      const [snippet] = await snippetRepo.findByWorkspaceId(workspaceId);
+      expect(snippet?.tags).toEqual([tagToKeep.id]);
     });
   });
 

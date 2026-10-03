@@ -280,6 +280,13 @@ export class FileStorageRepository
     });
   }
 
+  async findByWorkspaceId(workspaceId: EntityId): Promise<readonly FileEntity[]> {
+    return this.storage.find<FileEntity>(this.storeName, {
+      indexName: 'by_workspaceId',
+      indexValue: workspaceId,
+    });
+  }
+
   async findBySourceId(sourceId: EntityId): Promise<readonly FileEntity[]> {
     return this.storage.find<FileEntity>(this.storeName, {
       indexName: 'by_sourceId',
@@ -300,6 +307,13 @@ export class NoteStorageRepository extends StorageRepository<Note> implements IN
     });
   }
 
+  async findByWorkspaceId(workspaceId: EntityId): Promise<readonly Note[]> {
+    return this.storage.find<Note>(this.storeName, {
+      indexName: 'by_workspaceId',
+      indexValue: workspaceId,
+    });
+  }
+
   async findPinned(projectId: EntityId): Promise<readonly Note[]> {
     return this.storage.find<Note>(this.storeName, {
       predicate: (n) => n.projectId === projectId && n.isPinned,
@@ -316,6 +330,13 @@ export class LinkStorageRepository extends StorageRepository<Link> implements IL
     return this.storage.find<Link>(this.storeName, {
       indexName: 'by_projectId',
       indexValue: projectId,
+    });
+  }
+
+  async findByWorkspaceId(workspaceId: EntityId): Promise<readonly Link[]> {
+    return this.storage.find<Link>(this.storeName, {
+      indexName: 'by_workspaceId',
+      indexValue: workspaceId,
     });
   }
 
@@ -339,6 +360,13 @@ export class BookmarkStorageRepository
     return this.storage.find<Bookmark>(this.storeName, {
       indexName: 'by_projectId',
       indexValue: projectId,
+    });
+  }
+
+  async findByWorkspaceId(workspaceId: EntityId): Promise<readonly Bookmark[]> {
+    return this.storage.find<Bookmark>(this.storeName, {
+      indexName: 'by_workspaceId',
+      indexValue: workspaceId,
     });
   }
 
@@ -368,6 +396,13 @@ export class ReferenceStorageRepository
     });
   }
 
+  async findByWorkspaceId(workspaceId: EntityId): Promise<readonly Reference[]> {
+    return this.storage.find<Reference>(this.storeName, {
+      indexName: 'by_workspaceId',
+      indexValue: workspaceId,
+    });
+  }
+
   async findBySourceEntity(
     sourceEntityType: EntityType,
     sourceEntityId: EntityId,
@@ -391,6 +426,13 @@ export class CodeSnippetStorageRepository
     return this.storage.find<CodeSnippet>(this.storeName, {
       indexName: 'by_projectId',
       indexValue: projectId,
+    });
+  }
+
+  async findByWorkspaceId(workspaceId: EntityId): Promise<readonly CodeSnippet[]> {
+    return this.storage.find<CodeSnippet>(this.storeName, {
+      indexName: 'by_workspaceId',
+      indexValue: workspaceId,
     });
   }
 

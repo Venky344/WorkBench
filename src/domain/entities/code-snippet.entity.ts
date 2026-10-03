@@ -11,6 +11,7 @@ export interface CodeSnippet extends BaseEntity {
   readonly chatId?: EntityId;
   readonly messageId?: EntityId;
   readonly title?: string;
+  readonly description?: string;
   readonly language: string;
   readonly code: string;
   readonly filename?: string;
