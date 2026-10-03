@@ -13,6 +13,8 @@ import { LinkService } from '@/services/link.service';
 import { BookmarkService } from '@/services/bookmark.service';
 import { ReferenceService } from '@/services/reference.service';
 import { CodeSnippetService } from '@/services/code-snippet.service';
+import { TaskService } from '@/services/task.service';
+import { DecisionService } from '@/services/decision.service';
 import { Workspace, User } from '@/domain/entities';
 
 export interface WorkspaceContextValue {
@@ -81,6 +83,14 @@ export const useReferenceService = (): ReferenceService => {
 
 export const useCodeSnippetService = (): CodeSnippetService => {
   return useServices().codeSnippetService;
+};
+
+export const useTaskService = (): TaskService => {
+  return useServices().taskService;
+};
+
+export const useDecisionService = (): DecisionService => {
+  return useServices().decisionService;
 };
 
 export const useWorkspaceContext = (): WorkspaceContextValue => {

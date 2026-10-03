@@ -15,6 +15,8 @@ import {
   BookmarkStorageRepository,
   ReferenceStorageRepository,
   CodeSnippetStorageRepository,
+  TaskStorageRepository,
+  DecisionStorageRepository,
 } from '@/repositories/storage/entity-repositories.storage';
 import { generateEntityId } from '@/domain/value-objects/id';
 import { createCurrentTimestamp } from '@/domain/value-objects/timestamp';
@@ -33,6 +35,8 @@ describe('TagService & Deterministic Organization', () => {
   let bookmarkRepo: BookmarkStorageRepository;
   let referenceRepo: ReferenceStorageRepository;
   let snippetRepo: CodeSnippetStorageRepository;
+  let taskRepo: TaskStorageRepository;
+  let decisionRepo: DecisionStorageRepository;
   let tagService: TagService;
   let projectService: ProjectService;
   let chatService: ChatService;
@@ -50,6 +54,8 @@ describe('TagService & Deterministic Organization', () => {
     bookmarkRepo = new BookmarkStorageRepository(storage);
     referenceRepo = new ReferenceStorageRepository(storage);
     snippetRepo = new CodeSnippetStorageRepository(storage);
+    taskRepo = new TaskStorageRepository(storage);
+    decisionRepo = new DecisionStorageRepository(storage);
 
     projectService = new ProjectService(projectRepo);
     chatService = new ChatService(chatRepo, messageRepo, chatGroupRepo);
@@ -63,6 +69,8 @@ describe('TagService & Deterministic Organization', () => {
       bookmarkRepo,
       referenceRepo,
       snippetRepo,
+      taskRepo,
+      decisionRepo,
     );
   });
 
@@ -397,6 +405,32 @@ describe('TagService & Deterministic Organization', () => {
         updatedAt: now,
       });
 
+      await taskRepo.save({
+        id: generateEntityId(),
+        workspaceId,
+        projectId,
+        title: 'Task 1',
+        status: 'todo',
+        priority: 'medium',
+        order: 0,
+        tags: [tagToDelete.id, tagToKeep.id],
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await decisionRepo.save({
+        id: generateEntityId(),
+        workspaceId,
+        projectId,
+        title: 'Decision 1',
+        decision: 'Dec 1',
+        rationale: 'Rat 1',
+        status: 'accepted',
+        tags: [tagToDelete.id, tagToKeep.id],
+        createdAt: now,
+        updatedAt: now,
+      });
+
       // Verify usage counts
       const counts = await tagService.getTagUsageCount(workspaceId, tagToDelete.id);
       expect(counts.fileCount).toBe(1);
@@ -405,7 +439,9 @@ describe('TagService & Deterministic Organization', () => {
       expect(counts.bookmarkCount).toBe(1);
       expect(counts.referenceCount).toBe(1);
       expect(counts.codeSnippetCount).toBe(1);
-      expect(counts.totalCount).toBe(6);
+      expect(counts.taskCount).toBe(1);
+      expect(counts.decisionCount).toBe(1);
+      expect(counts.totalCount).toBe(8);
 
       // Delete the tag
       await tagService.deleteTag(tagToDelete.id);
@@ -428,6 +464,14 @@ describe('TagService & Deterministic Organization', () => {
 
       const [snippet] = await snippetRepo.findByWorkspaceId(workspaceId);
       expect(snippet?.tags).toEqual([tagToKeep.id]);
+
+      const [task] = await taskRepo.findByWorkspaceId(workspaceId);
+      expect(task?.tags).toEqual([tagToKeep.id]);
+      expect(task?.title).toBe('Task 1');
+
+      const [decision] = await decisionRepo.findByWorkspaceId(workspaceId);
+      expect(decision?.tags).toEqual([tagToKeep.id]);
+      expect(decision?.title).toBe('Decision 1');
     });
   });
 

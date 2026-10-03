@@ -6,7 +6,7 @@ export interface DialogProps {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
-  title?: string;
+  title?: ReactNode;
   description?: string;
   maxWidth?: string | number;
 }

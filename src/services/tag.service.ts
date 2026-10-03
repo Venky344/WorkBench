@@ -9,6 +9,8 @@ import {
   IBookmarkRepository,
   IReferenceRepository,
   ICodeSnippetRepository,
+  ITaskRepository,
+  IDecisionRepository,
 } from '@/repositories/contracts/entity-repositories.contract';
 import { Tag, Project, Chat } from '@/domain/entities';
 import { generateEntityId } from '@/domain/value-objects/id';
@@ -26,6 +28,8 @@ export interface TagUsageCount {
   readonly bookmarkCount?: number;
   readonly referenceCount?: number;
   readonly codeSnippetCount?: number;
+  readonly taskCount?: number;
+  readonly decisionCount?: number;
   readonly totalCount: number;
 }
 
@@ -40,6 +44,8 @@ export class TagService extends BaseService {
     private readonly bookmarkRepo?: IBookmarkRepository,
     private readonly referenceRepo?: IReferenceRepository,
     private readonly snippetRepo?: ICodeSnippetRepository,
+    private readonly taskRepo?: ITaskRepository,
+    private readonly decisionRepo?: IDecisionRepository,
   ) {
     super('TagService');
   }
@@ -285,6 +291,34 @@ export class TagService extends BaseService {
       }
     }
 
+    // Clean up task tag assignments
+    if (this.taskRepo) {
+      const tasks = await this.taskRepo.findByWorkspaceId(existing.workspaceId);
+      for (const task of tasks) {
+        if (task.tags && task.tags.includes(id)) {
+          await this.taskRepo.save({
+            ...task,
+            tags: Object.freeze(task.tags.filter((tId) => tId !== id)),
+            updatedAt: createCurrentTimestamp(),
+          });
+        }
+      }
+    }
+
+    // Clean up decision tag assignments
+    if (this.decisionRepo) {
+      const decisions = await this.decisionRepo.findByWorkspaceId(existing.workspaceId);
+      for (const decision of decisions) {
+        if (decision.tags && decision.tags.includes(id)) {
+          await this.decisionRepo.save({
+            ...decision,
+            tags: Object.freeze(decision.tags.filter((tId) => tId !== id)),
+            updatedAt: createCurrentTimestamp(),
+          });
+        }
+      }
+    }
+
     const deleted = await this.tagRepo.delete(id);
     this.log.info(`Tag deleted: ${existing.name} (${existing.id}) and cleaned from assignments`);
     return deleted;
@@ -299,6 +333,8 @@ export class TagService extends BaseService {
     let bookmarkCount = 0;
     let referenceCount = 0;
     let codeSnippetCount = 0;
+    let taskCount = 0;
+    let decisionCount = 0;
 
     if (this.projectRepo) {
       const projects = await this.projectRepo.findByWorkspaceId(workspaceId);
@@ -340,6 +376,16 @@ export class TagService extends BaseService {
       codeSnippetCount = snippets.filter((s) => s.tags && s.tags.includes(tagId)).length;
     }
 
+    if (this.taskRepo) {
+      const tasks = await this.taskRepo.findByWorkspaceId(workspaceId);
+      taskCount = tasks.filter((t) => t.tags && t.tags.includes(tagId)).length;
+    }
+
+    if (this.decisionRepo) {
+      const decisions = await this.decisionRepo.findByWorkspaceId(workspaceId);
+      decisionCount = decisions.filter((d) => d.tags && d.tags.includes(tagId)).length;
+    }
+
     return {
       projectCount,
       chatCount,
@@ -349,6 +395,8 @@ export class TagService extends BaseService {
       bookmarkCount,
       referenceCount,
       codeSnippetCount,
+      taskCount,
+      decisionCount,
       totalCount:
         projectCount +
         chatCount +
@@ -357,7 +405,9 @@ export class TagService extends BaseService {
         linkCount +
         bookmarkCount +
         referenceCount +
-        codeSnippetCount,
+        codeSnippetCount +
+        taskCount +
+        decisionCount,
     };
   }
 

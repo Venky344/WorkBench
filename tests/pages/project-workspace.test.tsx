@@ -132,9 +132,7 @@ describe('Project Workspace Experience', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Tasks & Work Items')).toBeInTheDocument();
-      expect(
-        screen.getByText(/Task management will be implemented in Phase 10/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText('No tasks yet')).toBeInTheDocument();
     });
 
     // 4. Navigate to Decisions tab
@@ -142,10 +140,8 @@ describe('Project Workspace Experience', () => {
     await user.click(decisionsTab);
 
     await waitFor(() => {
-      expect(screen.getByText('Architectural Decisions')).toBeInTheDocument();
-      expect(
-        screen.getByText(/Decision tracking will be implemented in Phase 10/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Architectural Decisions & Log')).toBeInTheDocument();
+      expect(screen.getByText('No decisions recorded')).toBeInTheDocument();
     });
 
     // 5. Navigate to Activity tab

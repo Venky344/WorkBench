@@ -69,6 +69,8 @@ export function createServiceContainer(storageEngine?: IStorageEngine): ServiceC
     storageService.bookmarks,
     storageService.references,
     storageService.codeSnippets,
+    storageService.tasks,
+    storageService.decisions,
   );
   const taskService = new TaskService(storageService.tasks);
   const decisionService = new DecisionService(storageService.decisions);

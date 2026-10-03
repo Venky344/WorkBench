@@ -117,12 +117,14 @@ export interface ICodeSnippetRepository extends IRepository<CodeSnippet> {
 
 export interface ITaskRepository extends IRepository<Task> {
   findByProjectId(projectId: EntityId): Promise<readonly Task[]>;
+  findByWorkspaceId(workspaceId: EntityId): Promise<readonly Task[]>;
   findByStatus(projectId: EntityId, status: TaskStatus): Promise<readonly Task[]>;
   findByDecisionId(decisionId: EntityId): Promise<readonly Task[]>;
 }
 
 export interface IDecisionRepository extends IRepository<Decision> {
   findByProjectId(projectId: EntityId): Promise<readonly Decision[]>;
+  findByWorkspaceId(workspaceId: EntityId): Promise<readonly Decision[]>;
   findByStatus(projectId: EntityId, status: DecisionStatus): Promise<readonly Decision[]>;
 }
 

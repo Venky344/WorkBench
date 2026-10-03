@@ -463,6 +463,13 @@ export class TaskStorageRepository extends StorageRepository<Task> implements IT
     });
   }
 
+  async findByWorkspaceId(workspaceId: EntityId): Promise<readonly Task[]> {
+    return this.storage.find<Task>(this.storeName, {
+      indexName: 'by_workspaceId',
+      indexValue: workspaceId,
+    });
+  }
+
   async findByStatus(projectId: EntityId, status: TaskStatus): Promise<readonly Task[]> {
     return this.storage.find<Task>(this.storeName, {
       predicate: (t) => t.projectId === projectId && t.status === status,
@@ -488,6 +495,13 @@ export class DecisionStorageRepository
     return this.storage.find<Decision>(this.storeName, {
       indexName: 'by_projectId',
       indexValue: projectId,
+    });
+  }
+
+  async findByWorkspaceId(workspaceId: EntityId): Promise<readonly Decision[]> {
+    return this.storage.find<Decision>(this.storeName, {
+      indexName: 'by_workspaceId',
+      indexValue: workspaceId,
     });
   }
 

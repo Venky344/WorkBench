@@ -5,6 +5,12 @@ import { generateEntityId } from '@/domain/value-objects/id';
 import { createCurrentTimestamp } from '@/domain/value-objects/timestamp';
 import { validateNonEmptyString } from '@/domain/validation/entity.validator';
 import { EntityId } from '@/types';
+import { NotFoundError, ValidationError } from '@/utils/errors';
+
+export interface DecisionFilterOptions {
+  readonly status?: DecisionStatus;
+  readonly tagId?: EntityId;
+}
 
 export class DecisionService extends BaseService {
   private readonly decisionRepo: IDecisionRepository;
@@ -38,7 +44,7 @@ export class DecisionService extends BaseService {
       title,
       decision: decisionText,
       rationale,
-      implications: params.implications,
+      implications: params.implications?.trim() || undefined,
       status: params.status ?? 'accepted',
       sourceChatId: params.sourceChatId,
       sourceMessageId: params.sourceMessageId,
@@ -47,6 +53,112 @@ export class DecisionService extends BaseService {
       updatedAt: now,
     };
 
-    return this.decisionRepo.save(record);
+    const saved = await this.decisionRepo.save(record);
+    this.log.info(`Decision created: "${saved.title}" (${saved.id}) in project ${saved.projectId}`);
+    return saved;
+  }
+
+  async getDecision(decisionId: EntityId): Promise<Decision | null> {
+    return this.decisionRepo.findById(decisionId);
+  }
+
+  async getDecisionOrThrow(decisionId: EntityId, expectedProjectId?: EntityId): Promise<Decision> {
+    const decision = await this.decisionRepo.findById(decisionId);
+    if (!decision) {
+      throw new NotFoundError('Decision', decisionId);
+    }
+    if (expectedProjectId && decision.projectId !== expectedProjectId) {
+      throw new ValidationError(`Decision does not belong to project "${expectedProjectId}"`);
+    }
+    return decision;
+  }
+
+  async updateDecision(
+    decisionId: EntityId,
+    updates: {
+      title?: string;
+      decision?: string;
+      rationale?: string;
+      implications?: string | null;
+      status?: DecisionStatus;
+      tags?: readonly string[];
+    },
+    expectedProjectId?: EntityId,
+  ): Promise<Decision> {
+    const existing = await this.getDecisionOrThrow(decisionId, expectedProjectId);
+
+    let title = existing.title;
+    if (updates.title !== undefined) {
+      title = validateNonEmptyString(updates.title, 'Decision title');
+    }
+
+    let decisionText = existing.decision;
+    if (updates.decision !== undefined) {
+      decisionText = validateNonEmptyString(updates.decision, 'Decision text');
+    }
+
+    let rationale = existing.rationale;
+    if (updates.rationale !== undefined) {
+      rationale = validateNonEmptyString(updates.rationale, 'Decision rationale');
+    }
+
+    const now = createCurrentTimestamp();
+    const updated: Decision = {
+      ...existing,
+      title,
+      decision: decisionText,
+      rationale,
+      implications:
+        updates.implications !== undefined
+          ? updates.implications?.trim() || undefined
+          : existing.implications,
+      status: updates.status ?? existing.status,
+      tags: updates.tags !== undefined ? Object.freeze([...updates.tags]) : existing.tags,
+      updatedAt: now,
+    };
+
+    const saved = await this.decisionRepo.save(updated);
+    this.log.info(`Decision updated: "${saved.title}" (${saved.id})`);
+    return saved;
+  }
+
+  async deleteDecision(decisionId: EntityId, expectedProjectId?: EntityId): Promise<boolean> {
+    const existing = await this.getDecisionOrThrow(decisionId, expectedProjectId);
+    const deleted = await this.decisionRepo.delete(decisionId);
+    this.log.info(`Decision deleted: "${existing.title}" (${decisionId})`);
+    return deleted;
+  }
+
+  async listDecisionsByProject(
+    projectId: EntityId,
+    options?: DecisionFilterOptions,
+  ): Promise<readonly Decision[]> {
+    const decisions = await this.decisionRepo.findByProjectId(projectId);
+    return this.filterDecisions(decisions, options);
+  }
+
+  async listDecisionsByWorkspace(
+    workspaceId: EntityId,
+    options?: DecisionFilterOptions,
+  ): Promise<readonly Decision[]> {
+    const decisions = await this.decisionRepo.findByWorkspaceId(workspaceId);
+    return this.filterDecisions(decisions, options);
+  }
+
+  private filterDecisions(
+    decisions: readonly Decision[],
+    options?: DecisionFilterOptions,
+  ): readonly Decision[] {
+    let filtered = [...decisions];
+
+    if (options?.status) {
+      filtered = filtered.filter((d) => d.status === options.status);
+    }
+
+    if (options?.tagId) {
+      filtered = filtered.filter((d) => d.tags && d.tags.includes(options.tagId!));
+    }
+
+    return Object.freeze(filtered.sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
   }
 }

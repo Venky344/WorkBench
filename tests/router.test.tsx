@@ -88,14 +88,18 @@ describe('Routing Foundation with AppShell', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders TasksPage at "/tasks"', () => {
+  it('renders TasksPage at "/tasks"', async () => {
     renderWithProviders(['/tasks']);
-    expect(screen.getByRole('heading', { name: 'Tasks', level: 1 })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Tasks', level: 1 })).toBeInTheDocument();
+    });
   });
 
-  it('renders DecisionsPage at "/decisions"', () => {
+  it('renders DecisionsPage at "/decisions"', async () => {
     renderWithProviders(['/decisions']);
-    expect(screen.getByRole('heading', { name: 'Decision Log', level: 1 })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Decision Log', level: 1 })).toBeInTheDocument();
+    });
   });
 
   it('renders ResourcesPage at "/resources"', () => {
