@@ -11,6 +11,7 @@ import {
   ICodeSnippetRepository,
   ITaskRepository,
   IDecisionRepository,
+  IMemoryRepository,
 } from '@/repositories/contracts/entity-repositories.contract';
 import { Tag, Project, Chat } from '@/domain/entities';
 import { generateEntityId } from '@/domain/value-objects/id';
@@ -30,6 +31,7 @@ export interface TagUsageCount {
   readonly codeSnippetCount?: number;
   readonly taskCount?: number;
   readonly decisionCount?: number;
+  readonly memoryCount?: number;
   readonly totalCount: number;
 }
 
@@ -46,6 +48,7 @@ export class TagService extends BaseService {
     private readonly snippetRepo?: ICodeSnippetRepository,
     private readonly taskRepo?: ITaskRepository,
     private readonly decisionRepo?: IDecisionRepository,
+    private readonly memoryRepo?: IMemoryRepository,
   ) {
     super('TagService');
   }
@@ -319,6 +322,20 @@ export class TagService extends BaseService {
       }
     }
 
+    // Clean up memory tag assignments
+    if (this.memoryRepo) {
+      const memories = await this.memoryRepo.findByWorkspaceId(existing.workspaceId);
+      for (const memory of memories) {
+        if (memory.tags && memory.tags.includes(id)) {
+          await this.memoryRepo.save({
+            ...memory,
+            tags: Object.freeze(memory.tags.filter((tId) => tId !== id)),
+            updatedAt: createCurrentTimestamp(),
+          });
+        }
+      }
+    }
+
     const deleted = await this.tagRepo.delete(id);
     this.log.info(`Tag deleted: ${existing.name} (${existing.id}) and cleaned from assignments`);
     return deleted;
@@ -335,6 +352,7 @@ export class TagService extends BaseService {
     let codeSnippetCount = 0;
     let taskCount = 0;
     let decisionCount = 0;
+    let memoryCount = 0;
 
     if (this.projectRepo) {
       const projects = await this.projectRepo.findByWorkspaceId(workspaceId);
@@ -386,6 +404,11 @@ export class TagService extends BaseService {
       decisionCount = decisions.filter((d) => d.tags && d.tags.includes(tagId)).length;
     }
 
+    if (this.memoryRepo) {
+      const memories = await this.memoryRepo.findByWorkspaceId(workspaceId);
+      memoryCount = memories.filter((m) => m.tags && m.tags.includes(tagId)).length;
+    }
+
     return {
       projectCount,
       chatCount,
@@ -397,6 +420,7 @@ export class TagService extends BaseService {
       codeSnippetCount,
       taskCount,
       decisionCount,
+      memoryCount,
       totalCount:
         projectCount +
         chatCount +
@@ -407,7 +431,8 @@ export class TagService extends BaseService {
         referenceCount +
         codeSnippetCount +
         taskCount +
-        decisionCount,
+        decisionCount +
+        memoryCount,
     };
   }
 

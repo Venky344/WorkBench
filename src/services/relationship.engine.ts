@@ -18,6 +18,7 @@ import {
   ICodeSnippetRepository,
   ITaskRepository,
   IDecisionRepository,
+  IMemoryRepository,
   ITagRepository,
   IRelationshipRepository,
 } from '@/repositories/contracts/entity-repositories.contract';
@@ -34,6 +35,7 @@ export interface RelationshipEngineDependencies {
   readonly codeSnippetRepo: ICodeSnippetRepository;
   readonly taskRepo: ITaskRepository;
   readonly decisionRepo: IDecisionRepository;
+  readonly memoryRepo?: IMemoryRepository;
   readonly tagRepo: ITagRepository;
   readonly relationshipRepo: IRelationshipRepository;
 }
@@ -467,6 +469,42 @@ export class RelationshipEngine {
         }
       }
     }
+
+    // Memory pointing to Source Entities
+    if (source.entityType === 'memory' && Array.isArray(meta.sourceReferences)) {
+      for (const ref of meta.sourceReferences as readonly {
+        entityType: EntityType;
+        entityId: string;
+      }[]) {
+        const target = entityMap.get(`${ref.entityType}:${ref.entityId}`);
+        if (target) {
+          emit(target, {
+            origin: 'reference',
+            description: 'Supporting source for this memory item',
+            depth,
+          });
+        }
+      }
+    }
+
+    // Source entity linked to Memory (inverse)
+    for (const target of entityMap.values()) {
+      if (target.entityType === 'memory' && Array.isArray(target.metadata?.sourceReferences)) {
+        const hasRef = (
+          target.metadata.sourceReferences as readonly {
+            entityType: EntityType;
+            entityId: string;
+          }[]
+        ).some((ref) => ref.entityType === source.entityType && ref.entityId === source.entityId);
+        if (hasRef) {
+          emit(target, {
+            origin: 'reference',
+            description: 'Project memory referencing this entity',
+            depth,
+          });
+        }
+      }
+    }
   }
 
   /**
@@ -699,6 +737,30 @@ export class RelationshipEngine {
           status: d.status,
         },
       });
+    }
+
+    // Project Memories
+    if (this.deps.memoryRepo) {
+      const memories = await this.deps.memoryRepo.findByWorkspaceId(workspaceId);
+      for (const m of memories) {
+        entityMap.set(`memory:${m.id}`, {
+          entityType: 'memory',
+          entityId: m.id,
+          workspaceId: m.workspaceId,
+          title: m.title,
+          subtitle: `Type: ${m.type} • Importance: ${m.importance}`,
+          projectId: m.projectId,
+          tagIds: m.tags ?? [],
+          createdAt: m.createdAt,
+          updatedAt: m.updatedAt,
+          metadata: {
+            type: m.type,
+            importance: m.importance,
+            status: m.status,
+            sourceReferences: m.sourceReferences,
+          },
+        });
+      }
     }
 
     return { entityMap, projectMap, tagMap };

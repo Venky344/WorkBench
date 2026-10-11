@@ -20,6 +20,7 @@ import {
   ICodeSnippetRepository,
   ITaskRepository,
   IDecisionRepository,
+  IMemoryRepository,
   ITagRepository,
   IRelationshipRepository,
 } from '@/repositories/contracts/entity-repositories.contract';
@@ -41,6 +42,7 @@ export interface BrainServiceDependencies {
   readonly codeSnippetRepo: ICodeSnippetRepository;
   readonly taskRepo: ITaskRepository;
   readonly decisionRepo: IDecisionRepository;
+  readonly memoryRepo?: IMemoryRepository;
   readonly tagRepo: ITagRepository;
   readonly relationshipRepo: IRelationshipRepository;
 }
@@ -94,6 +96,7 @@ export class BrainService extends BaseService {
       references,
       tasks,
       decisions,
+      memories,
       allWorkspaceTags,
       allRelationships,
     ] = await Promise.all([
@@ -107,6 +110,7 @@ export class BrainService extends BaseService {
       this.deps.referenceRepo.findByProjectId(projectId),
       this.deps.taskRepo.findByProjectId(projectId),
       this.deps.decisionRepo.findByProjectId(projectId),
+      this.deps.memoryRepo ? this.deps.memoryRepo.findByProjectId(projectId) : Promise.resolve([]),
       this.deps.tagRepo.findByWorkspaceId(workspaceId),
       this.deps.relationshipRepo.findByWorkspaceId(workspaceId),
     ]);
@@ -149,6 +153,7 @@ export class BrainService extends BaseService {
     references.forEach((r) => r.tags?.forEach((t) => usedTagIds.add(t)));
     tasks.forEach((t) => t.tags?.forEach((tag) => usedTagIds.add(tag)));
     decisions.forEach((d) => d.tags?.forEach((tag) => usedTagIds.add(tag)));
+    memories.forEach((m) => m.tags?.forEach((tag) => usedTagIds.add(tag)));
 
     const tagMap = new Map<EntityId, Tag>(allWorkspaceTags.map((t) => [t.id, t]));
     const projectTags: Tag[] = Array.from(usedTagIds)
@@ -172,6 +177,7 @@ export class BrainService extends BaseService {
       ...references.map((r) => r.id),
       ...tasks.map((t) => t.id),
       ...decisions.map((d) => d.id),
+      ...memories.map((m) => m.id),
     ]);
 
     const explicitRelationships: ExplicitRelationshipDetail[] = [];
@@ -288,6 +294,7 @@ export class BrainService extends BaseService {
     collectRecent('reference', references);
     collectRecent('task', tasks);
     collectRecent('decision', decisions);
+    collectRecent('memory', memories);
 
     recentItems.sort((a, b) => {
       const timeA = a.updatedAt ? Date.parse(a.updatedAt) : 0;
@@ -308,6 +315,7 @@ export class BrainService extends BaseService {
         references: references.length,
         tasks: tasks.length,
         decisions: decisions.length,
+        memories: memories.length,
         explicitRelationships: explicitRelationships.length,
         tags: projectTags.length,
       },

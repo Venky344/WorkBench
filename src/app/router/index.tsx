@@ -13,6 +13,7 @@ import {
   ProjectNoteDetailPage,
   ProjectTasksPage,
   ProjectDecisionsPage,
+  ProjectMemoryPage,
   ProjectResourcesPage,
   ProjectActivityPage,
   ProjectSettingsPage,
@@ -52,6 +53,10 @@ export const router = createBrowserRouter(
             {
               path: 'brain',
               element: <ProjectBrainPage />,
+            },
+            {
+              path: 'memory',
+              element: <ProjectMemoryPage />,
             },
             {
               path: 'chats',

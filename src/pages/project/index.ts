@@ -8,6 +8,7 @@ export * from './ProjectNotesPage';
 export * from './ProjectNoteDetailPage';
 export * from './ProjectTasksPage';
 export * from './ProjectDecisionsPage';
+export * from './ProjectMemoryPage';
 export * from './ProjectResourcesPage';
 export * from './ProjectActivityPage';
 export * from './ProjectSettingsPage';

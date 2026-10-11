@@ -13,6 +13,7 @@ import {
   StickyNote,
   CheckSquare,
   Network,
+  BrainCircuit,
   GitCommit,
   BookMarked,
   Activity,
@@ -29,6 +30,14 @@ export const ProjectOverviewPage: React.FC = () => {
       icon: <Network size={18} />,
       to: `/projects/${project.id}/brain`,
       phaseBadge: 'Phase 11',
+    },
+    {
+      title: 'Project Memory & Context',
+      description:
+        'Structured facts, goals, constraints, preferences, and preserved project context.',
+      icon: <BrainCircuit size={18} />,
+      to: `/projects/${project.id}/memory`,
+      phaseBadge: 'Phase 12',
     },
     {
       title: 'Conversations & Chats',

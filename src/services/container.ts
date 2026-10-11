@@ -17,6 +17,7 @@ import { LinkService } from './link.service';
 import { BookmarkService } from './bookmark.service';
 import { ReferenceService } from './reference.service';
 import { CodeSnippetService } from './code-snippet.service';
+import { MemoryService } from './memory.service';
 import { Workspace, User } from '@/domain/entities';
 
 export interface ServiceContainer {
@@ -30,6 +31,7 @@ export interface ServiceContainer {
   readonly decisionService: DecisionService;
   readonly relationshipService: RelationshipService;
   readonly brainService: BrainService;
+  readonly memoryService: MemoryService;
   readonly sourceService: SourceService;
   readonly inboxService: InboxService;
   readonly fileService: FileService;
@@ -61,6 +63,18 @@ export function createServiceContainer(storageEngine?: IStorageEngine): ServiceC
   const bookmarkService = new BookmarkService(storageService.bookmarks);
   const referenceService = new ReferenceService(storageService.references);
   const codeSnippetService = new CodeSnippetService(storageService.codeSnippets);
+  const memoryService = new MemoryService(storageService.memories, {
+    projectRepo: storageService.projects,
+    chatRepo: storageService.chats,
+    noteRepo: storageService.notes,
+    fileRepo: storageService.files,
+    linkRepo: storageService.links,
+    bookmarkRepo: storageService.bookmarks,
+    referenceRepo: storageService.references,
+    snippetRepo: storageService.codeSnippets,
+    taskRepo: storageService.tasks,
+    decisionRepo: storageService.decisions,
+  });
   const tagService = new TagService(
     storageService.tags,
     storageService.projects,
@@ -73,6 +87,7 @@ export function createServiceContainer(storageEngine?: IStorageEngine): ServiceC
     storageService.codeSnippets,
     storageService.tasks,
     storageService.decisions,
+    storageService.memories,
   );
   const taskService = new TaskService(storageService.tasks);
   const decisionService = new DecisionService(storageService.decisions);
@@ -89,6 +104,7 @@ export function createServiceContainer(storageEngine?: IStorageEngine): ServiceC
     codeSnippetRepo: storageService.codeSnippets,
     taskRepo: storageService.tasks,
     decisionRepo: storageService.decisions,
+    memoryRepo: storageService.memories,
     tagRepo: storageService.tags,
     relationshipRepo: storageService.relationships,
   });
@@ -108,6 +124,7 @@ export function createServiceContainer(storageEngine?: IStorageEngine): ServiceC
     decisionService,
     relationshipService,
     brainService,
+    memoryService,
     sourceService,
     inboxService,
     fileService,

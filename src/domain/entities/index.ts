@@ -13,6 +13,7 @@ export * from './reference.entity';
 export * from './code-snippet.entity';
 export * from './task.entity';
 export * from './decision.entity';
+export * from './memory.entity';
 export * from './tag.entity';
 export * from './source.entity';
 export * from './relationship.entity';

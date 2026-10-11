@@ -8,6 +8,7 @@ import {
   StickyNote,
   CheckSquare,
   GitCommit,
+  BrainCircuit,
   BookMarked,
   Activity,
   Settings,
@@ -39,6 +40,12 @@ export const ProjectNavigation: React.FC = () => {
       label: 'Brain',
       path: `/projects/${projectId}/brain`,
       icon: <Network size={15} />,
+    },
+    {
+      id: 'memory',
+      label: 'Memory',
+      path: `/projects/${projectId}/memory`,
+      icon: <BrainCircuit size={15} />,
     },
     {
       id: 'chats',

@@ -27,6 +27,7 @@ export type EntityType =
   | 'code_snippet'
   | 'task'
   | 'decision'
+  | 'memory'
   | 'tag'
   | 'source'
   | 'relationship'

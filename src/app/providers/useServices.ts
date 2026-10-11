@@ -17,6 +17,7 @@ import { TaskService } from '@/services/task.service';
 import { DecisionService } from '@/services/decision.service';
 import { RelationshipService } from '@/services/relationship.service';
 import { BrainService } from '@/services/brain.service';
+import { MemoryService } from '@/services/memory.service';
 import { Workspace, User } from '@/domain/entities';
 
 export interface WorkspaceContextValue {
@@ -101,6 +102,10 @@ export const useRelationshipService = (): RelationshipService => {
 
 export const useBrainService = (): BrainService => {
   return useServices().brainService;
+};
+
+export const useMemoryService = (): MemoryService => {
+  return useServices().memoryService;
 };
 
 export const useWorkspaceContext = (): WorkspaceContextValue => {

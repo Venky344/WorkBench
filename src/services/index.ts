@@ -18,4 +18,5 @@ export * from './link.service';
 export * from './bookmark.service';
 export * from './reference.service';
 export * from './code-snippet.service';
+export * from './memory.service';
 export * from './container';

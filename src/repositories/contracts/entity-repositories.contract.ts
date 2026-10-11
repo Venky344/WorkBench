@@ -14,6 +14,7 @@ import {
   CodeSnippet,
   Task,
   Decision,
+  MemoryItem,
   Tag,
   Source,
   Relationship,
@@ -25,10 +26,12 @@ import {
   RelationshipType,
   TaskStatus,
   DecisionStatus,
+  MemoryType,
+  MemoryStatus,
   MessageRole,
   InboxStatus,
 } from '@/domain/entities';
-import { EntityId } from '@/types';
+import { EntityId, ISOTimestamp } from '@/types';
 import { SourceProvider } from '@/domain/value-objects/provenance';
 
 export interface IWorkspaceRepository extends IRepository<Workspace> {
@@ -126,6 +129,14 @@ export interface IDecisionRepository extends IRepository<Decision> {
   findByProjectId(projectId: EntityId): Promise<readonly Decision[]>;
   findByWorkspaceId(workspaceId: EntityId): Promise<readonly Decision[]>;
   findByStatus(projectId: EntityId, status: DecisionStatus): Promise<readonly Decision[]>;
+}
+
+export interface IMemoryRepository extends IRepository<MemoryItem> {
+  findByProjectId(projectId: EntityId): Promise<readonly MemoryItem[]>;
+  findByWorkspaceId(workspaceId: EntityId): Promise<readonly MemoryItem[]>;
+  findByType(projectId: EntityId, type: MemoryType): Promise<readonly MemoryItem[]>;
+  findByStatus(projectId: EntityId, status: MemoryStatus): Promise<readonly MemoryItem[]>;
+  findDueForReview(projectId: EntityId, asOfDate?: ISOTimestamp): Promise<readonly MemoryItem[]>;
 }
 
 export interface ITagRepository extends IRepository<Tag> {

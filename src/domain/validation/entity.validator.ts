@@ -63,6 +63,7 @@ const VALID_ENTITY_TYPES: ReadonlySet<string> = new Set<EntityType>([
   'code_snippet',
   'task',
   'decision',
+  'memory',
   'tag',
   'source',
   'relationship',

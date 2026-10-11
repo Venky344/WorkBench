@@ -14,6 +14,7 @@ import {
   CodeSnippet,
   Task,
   Decision,
+  MemoryItem,
   Tag,
   Source,
   Relationship,
@@ -25,6 +26,8 @@ import {
   RelationshipType,
   TaskStatus,
   DecisionStatus,
+  MemoryType,
+  MemoryStatus,
   MessageRole,
   InboxStatus,
 } from '@/domain/entities';
@@ -43,6 +46,7 @@ import {
   ICodeSnippetRepository,
   ITaskRepository,
   IDecisionRepository,
+  IMemoryRepository,
   ITagRepository,
   ISourceRepository,
   IRelationshipRepository,
@@ -53,7 +57,7 @@ import {
 } from '../contracts/entity-repositories.contract';
 import { IStorageEngine } from '@/persistence/storage.interface';
 import { STORES } from '@/persistence/schema';
-import { EntityId } from '@/types';
+import { EntityId, ISOTimestamp } from '@/types';
 import { SourceProvider } from '@/domain/value-objects/provenance';
 
 export class WorkspaceStorageRepository
@@ -508,6 +512,58 @@ export class DecisionStorageRepository
   async findByStatus(projectId: EntityId, status: DecisionStatus): Promise<readonly Decision[]> {
     return this.storage.find<Decision>(this.storeName, {
       predicate: (d) => d.projectId === projectId && d.status === status,
+    });
+  }
+}
+
+export class MemoryStorageRepository
+  extends StorageRepository<MemoryItem>
+  implements IMemoryRepository
+{
+  constructor(storage: IStorageEngine) {
+    super(storage, STORES.PROJECT_MEMORIES, 'MemoryItem');
+  }
+
+  async findByProjectId(projectId: EntityId): Promise<readonly MemoryItem[]> {
+    const results = await this.storage.find<MemoryItem>(this.storeName, {
+      indexName: 'by_projectId',
+      indexValue: projectId,
+    });
+    return [...results].sort(
+      (a, b) => a.order - b.order || Date.parse(b.updatedAt) - Date.parse(a.updatedAt),
+    );
+  }
+
+  async findByWorkspaceId(workspaceId: EntityId): Promise<readonly MemoryItem[]> {
+    return this.storage.find<MemoryItem>(this.storeName, {
+      indexName: 'by_workspaceId',
+      indexValue: workspaceId,
+    });
+  }
+
+  async findByType(projectId: EntityId, type: MemoryType): Promise<readonly MemoryItem[]> {
+    return this.storage.find<MemoryItem>(this.storeName, {
+      predicate: (m) => m.projectId === projectId && m.type === type,
+    });
+  }
+
+  async findByStatus(projectId: EntityId, status: MemoryStatus): Promise<readonly MemoryItem[]> {
+    return this.storage.find<MemoryItem>(this.storeName, {
+      predicate: (m) => m.projectId === projectId && m.status === status,
+    });
+  }
+
+  async findDueForReview(
+    projectId: EntityId,
+    asOfDate: ISOTimestamp = new Date().toISOString(),
+  ): Promise<readonly MemoryItem[]> {
+    const asOfMs = Date.parse(asOfDate);
+    return this.storage.find<MemoryItem>(this.storeName, {
+      predicate: (m) =>
+        m.projectId === projectId &&
+        m.status === 'active' &&
+        !!m.reviewDate &&
+        Date.parse(m.reviewDate) <= asOfMs,
     });
   }
 }

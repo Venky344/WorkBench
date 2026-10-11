@@ -85,6 +85,7 @@ export interface ProjectContextSummary {
     readonly references: number;
     readonly tasks: number;
     readonly decisions: number;
+    readonly memories?: number;
     readonly explicitRelationships: number;
     readonly tags: number;
   };

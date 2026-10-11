@@ -18,6 +18,7 @@ import {
   CodeSnippetStorageRepository,
   TaskStorageRepository,
   DecisionStorageRepository,
+  MemoryStorageRepository,
   TagStorageRepository,
   SourceStorageRepository,
   RelationshipStorageRepository,
@@ -41,6 +42,7 @@ import {
   ICodeSnippetRepository,
   ITaskRepository,
   IDecisionRepository,
+  IMemoryRepository,
   ITagRepository,
   ISourceRepository,
   IRelationshipRepository,
@@ -69,6 +71,7 @@ export class StorageService extends BaseService {
   readonly codeSnippets: ICodeSnippetRepository;
   readonly tasks: ITaskRepository;
   readonly decisions: IDecisionRepository;
+  readonly memories: IMemoryRepository;
   readonly tags: ITagRepository;
   readonly sources: ISourceRepository;
   readonly relationships: IRelationshipRepository;
@@ -103,6 +106,7 @@ export class StorageService extends BaseService {
     this.codeSnippets = new CodeSnippetStorageRepository(this.storage);
     this.tasks = new TaskStorageRepository(this.storage);
     this.decisions = new DecisionStorageRepository(this.storage);
+    this.memories = new MemoryStorageRepository(this.storage);
     this.tags = new TagStorageRepository(this.storage);
     this.sources = new SourceStorageRepository(this.storage);
     this.relationships = new RelationshipStorageRepository(this.storage);

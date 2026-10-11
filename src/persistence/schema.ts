@@ -1,7 +1,7 @@
 import { DatabaseSchema, StoreSchema } from './storage.interface';
 
 export const WORKBENCH_DB_NAME = 'workbench_local_db';
-export const WORKBENCH_DB_VERSION = 2;
+export const WORKBENCH_DB_VERSION = 3;
 
 export const STORES = {
   WORKSPACES: 'workspaces',
@@ -26,6 +26,7 @@ export const STORES = {
   INBOX_ITEMS: 'inbox_items',
   AUTOMATIONS: 'automations',
   PROJECT_TEMPLATES: 'project_templates',
+  PROJECT_MEMORIES: 'project_memories',
 } as const;
 
 export type StoreName = (typeof STORES)[keyof typeof STORES];
@@ -236,8 +237,24 @@ export const V2_STORES: readonly StoreSchema[] = [
   },
 ];
 
+export const V3_STORES: readonly StoreSchema[] = [
+  ...V2_STORES,
+  {
+    name: STORES.PROJECT_MEMORIES,
+    keyPath: 'id',
+    indexes: [
+      { name: 'by_workspaceId', keyPath: 'workspaceId' },
+      { name: 'by_projectId', keyPath: 'projectId' },
+      { name: 'by_type', keyPath: 'type' },
+      { name: 'by_status', keyPath: 'status' },
+      { name: 'by_importance', keyPath: 'importance' },
+      { name: 'by_reviewDate', keyPath: 'reviewDate' },
+    ],
+  },
+];
+
 export const CURRENT_DATABASE_SCHEMA: DatabaseSchema = {
   name: WORKBENCH_DB_NAME,
   version: WORKBENCH_DB_VERSION,
-  stores: V2_STORES,
+  stores: V3_STORES,
 };
